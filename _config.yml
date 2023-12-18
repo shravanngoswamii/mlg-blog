@@ -2,7 +2,7 @@ title:            MLG Blog
 email:            wessel.p.bruinsma@gmail.com
 description:      Blog of the Machine Learning Group at the University of Cambridge
 url:              "https://mlg.eng.cam.ac.uk"
-baseurl:          "/blog/"
+baseurl:          "/blog"
 github_usename:   cambridge-mlg
 google_analytics: G-216EYNZ435
 
