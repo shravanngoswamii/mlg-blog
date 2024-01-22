@@ -13,7 +13,7 @@ comments:    true
 image:      /assets/images/flow-matching/flow-matching.png
 excerpt: |
     Flow matching (FM) is a new generative modelling paradigm which is rapidly gaining popularity in the deep learning community. Flow matching combines aspects from Continuous Normalising Flows (CNFs) and Diffusion Models (DMs), alleviating key issues both methods have. In this blogpost we’ll cover the main ideas and unique properties of FM models starting from the basics.
-
+draft: true
 ---
 
 <style type="text/css">
