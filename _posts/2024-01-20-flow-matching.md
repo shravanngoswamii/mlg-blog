@@ -734,7 +734,7 @@ $$
 \end{equation}
 $$
 thus constructing $p_t$ or $u_t$ is *equivalent*.
-One key idea (Lipman et al., 2023 and Albergo et al., 2023) is to express the probability path as a marginal over a joint involving a latent variable $z$: 
+One key idea (Lipman et al., 2023 and Albergo & Vanden-Eijnden, 2022) is to express the probability path as a marginal over a joint involving a latent variable $z$: 
 $p_t(x_t) = \int p(z) ~p_{t\mid z}(x_t\mid z) \textrm{d}z$.
 The $p_{t\mid z}(x_t\mid z)$ term being a **conditional probability path**, satisfying some boundary conditions at $t=0$ and $t=1$ so that $p_t$ be a valid path interpolating between $q_0$ and $q_1$.
 In addition, as opposed to the marginal $p_t$ , the conditional $p_{t\mid1}$ could be available in closed-form.
@@ -938,7 +938,7 @@ u_t \big( \phi_t(x_0) \big)
 &\approx \frac{1}{n} \sum_{i = 1}^n u_t \big( \phi_t(x_0) \mid x_1^{(i)} \big) \ \text{with } x_1^{(i)} \sim p_{1|t}(x_1 \mid \phi_t(x_0)).
 \end{align}
 $$
-In practice we don't have access to the posterior $p_{1|t}(x_1|x_t)$, but in this specific setting we do have closed-form expressions for everything (Albergo et al., 2023), and so we can visualise the marginal vector field $u_t\big( \phi_t(x_0)\big)$ and the conditional vector fields $u_t \big( \phi_t(x_0) \mid x_1^{(i)} \big)$ for all our "data" samples $x_1^{(i)}$ and see how they compare. This is shown in the figure below.
+In practice we don't have access to the posterior $p_{1|t}(x_1|x_t)$, but in this specific setting we do have closed-form expressions for everything (Albergo & Vanden-Eijnden, 2022), and so we can visualise the marginal vector field $u_t\big( \phi_t(x_0)\big)$ and the conditional vector fields $u_t \big( \phi_t(x_0) \mid x_1^{(i)} \big)$ for all our "data" samples $x_1^{(i)}$ and see how they compare. This is shown in the figure below.
 
 <div markdown="1" class="my-center">
 <div>
@@ -1490,7 +1490,7 @@ e.g. $\ p(x_t | x_1) = \mathrm{N}(x_t|tx_1, (1-t)^2)$.
 
 {% include image.html
   name="Figure 22"
-  alt="One sided interpolation. Source: Figure (2) in Albergo et al. (2023)."
+  alt="One sided interpolation. Source: Figure (2) in Albergo & Vanden-Eijnden (2022)."
   ref="albergo_one_sided.jpg"
   src="flow-matching/albergo_one_sided.jpg"
   width=800
@@ -1503,7 +1503,7 @@ e.g. $\ p(x_t | x_1) = \mathrm{N}(x_t|tx_1, (1-t)^2)$.
 Yet, more generally, we can consider conditioning and marginalising over latent variables $z$, and minimising the following loss:
 $$\mathcal{L}_{\mathrm{CFM}}(\theta) = \mathbb{E}_{(t,z,x_t) \sim \mathcal{U}[0,1] q(z) p(\cdot|z)}[\| u_\theta(t, x_t) - u_t(x_t|z)\|^2].$$
 
-As suggested in Liu et al. (2023), Tong et al. (2023), Albergo et al. (2023) and Pooladian et al. (2023) one can condition on *both* endpoints $z=(x_1, x_0)$ of the process, referred as *two-sided conditioning*. The marginal probability path is defined as:
+As suggested in Liu et al. (2023), Tong et al. (2023), Albergo & Vanden-Eijnden (2022) and Pooladian et al. (2023) one can condition on *both* endpoints $z=(x_1, x_0)$ of the process, referred as *two-sided conditioning*. The marginal probability path is defined as:
 $$
 p_t(x_t) = \int p_t(x_t \mid z) q(z) \dd{z} = \int p_t(x_t \mid x_1, x_0) q(x_1, x_0) \dd{x_1} \dd{x_0}.
 $$
@@ -1522,7 +1522,7 @@ For instance, a deterministic linear interpolation gives $p(x_t \mid x_0, x_1) =
 
 {% include image.html
   name="Figure 23"
-  alt="Two sided interpolation. Source: Figure (2) in Albergo et al. (2023)."
+  alt="Two sided interpolation. Source: Figure (2) in Albergo & Vanden-Eijnden (2022)."
   ref="albergo_two_sided.jpg"
   src="flow-matching/albergo_two_sided.jpg"
   width=800
@@ -1740,7 +1740,7 @@ Please cite us as:
  
 # References
 
-- Albergo, Michael S. and Boffi, Nicholas M. and Vanden-Eijnden, Eric (2023). [Stochastic Interpolants: A Unifying Framework for Flows and Diffusions](http://arxiv.org/abs/2303.08797).
+- Michael S. Albergo & Eric Vanden-Eijnden (2023) Building Normalizing Flows with Stochastic Interpolants, ICLR.
 
 - Behrmann, Jens and Grathwohl, Will and Chen, Ricky T. Q. and Duvenaud, David and Jacobsen, Joern-Henrik (2019). [Invertible Residual Networks](https://proceedings.mlr.press/v97/behrmann19a.html).
 
