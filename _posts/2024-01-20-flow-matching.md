@@ -1740,13 +1740,13 @@ Please cite us as:
  
 # References
 
-- Michael S. Albergo & Eric Vanden-Eijnden (2023) Building Normalizing Flows with Stochastic Interpolants, ICLR.
+- Michael S. Albergo & Eric Vanden-Eijnden (2023) [Building Normalizing Flows with Stochastic Interpolants](https://openreview.net/pdf?id=li7qeBbCR1t).
 
 - Behrmann, Jens and Grathwohl, Will and Chen, Ricky T. Q. and Duvenaud, David and Jacobsen, Joern-Henrik (2019). [Invertible Residual Networks](https://proceedings.mlr.press/v97/behrmann19a.html).
 
 - Betker, James, Gabriel Goh, Li Jing, TimBrooks, Jianfeng Wang, Linjie Li, LongOuyang, JuntangZhuang, JoyceLee, YufeiGuo, WesamManassra, PrafullaDhariwal, CaseyChu, YunxinJiao and Aditya Ramesh (2023). [Improving Image Generation with Better Captions](https://cdn.openai.com/papers/dall-e-3.pdf).
 
-- Chen & Gopinath (2000) Gaussianization, Advances in Neural Information Processing Systems.
+- Chen & Gopinath (2000). [Gaussianization](https://proceedings.neurips.cc/paper_files/paper/2000/file/3c947bc2f7ff007b86a9428b74654de5-Paper.pdf).
 
 - Chen & Lipman (2023). [Riemannian Flow Matching on General Geometries](http://arxiv.org/abs/2302.03660v2).
 
@@ -1756,7 +1756,7 @@ Please cite us as:
 
 - Dupont, Doucet & Teh (2019). [Augmented Neural Odes](http://arxiv.org/abs/1904.01681v3).
 
-- Friedman (1987) Exploratory projection pursuit, Journal of the American statistical association.
+- Friedman (1987). [Exploratory projection pursuit](https://www.jstor.org/stable/pdf/2289161.pdf).
 
 - George Papamakarios, Theo Pavlakou, Iain Murray (2018). [Masked Autoregressive Flow for Density Estimation](https://proceedings.neurips.cc/paper/2017/file/6c1da886822c67822bcf3679d04369fa-Paper.pdf).
 
