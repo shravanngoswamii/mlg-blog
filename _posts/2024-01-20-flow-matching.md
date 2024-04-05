@@ -1,6 +1,6 @@
 ---
 layout:      post
-title:       "Flow Matching"
+title:       "An introduction to Flow Matching"
 tags:        [diffusion model, normalising flows, generative modelling]
 authors:
     - name: Tor Fjelde
@@ -10,13 +10,22 @@ authors:
     - name: Vincent Dutordoir
       link: https://vdutor.github.io/
 comments:    true
-image:      /assets/images/flow-matching/flow-matching.png
+image:      /assets/images/flow-matching/representative.gif
 excerpt: |
     Flow matching (FM) is a new generative modelling paradigm which is rapidly gaining popularity in the deep learning community. Flow matching combines aspects from Continuous Normalising Flows (CNFs) and Diffusion Models (DMs), alleviating key issues both methods have. In this blogpost we’ll cover the main ideas and unique properties of FM models starting from the basics.
 draft: true
 ---
 
 <style type="text/css">
+/* HACK: Make the corners of the image round */
+main article > img.representative-image {
+  border-radius: 15px !important;
+  /* HACK: gets around the `object-fit: contain` setting */
+  /* Source: https://stackoverflow.com/a/70626773 */
+  max-width: 100% !important;
+  width: inherit;
+}
+
 .my-center { display: flex; }
 .my-center div {
   margin: auto;
@@ -74,12 +83,28 @@ draft: true
   border-color: #bce8f1;
 }
 
-.my-danger, .my-warning, .my-success, .my-info {
+.my-proof {
+  <!-- background-color: rgb(255, 219, 228); -->
+  <!-- border-color: #bce8f1; -->
+}
+
+.my-box {
   padding: 15px;
-  margin-bottom: 20px;
+
+  margin-top: 1em;
+  margin-bottom: 1em;
   
   border: 1px solid transparent;
   border-radius: 4px;
+}
+
+/* Remove margins from p tags inside these boxes */
+.my-box > p:first-of-type {
+    margin-top: 0;
+}
+/ * We sometimes wrap the p tag in a div so deal with that too */
+.my-box > div:first-of-type > p:first-of-type {
+    margin: 0;
 }
     
 .my-quote {
@@ -99,6 +124,25 @@ draft: true
 
 main .image-container .caption {
     text-align: center;
+}
+
+/* Remove the default triangle */
+summary {
+  display: block;
+  /* Make font a bit nicer */
+  font-weight: bold;
+}
+
+/* Create a new custom triangle on the right side */
+summary::after {
+  margin-left: 1ch;
+  display: inline-block;
+  content: '▶️';
+  transition: 0.2s;
+}
+
+details[open] > summary::after {
+  transform: rotate(90deg);
 }
 </style>
 
@@ -226,8 +270,10 @@ where the last equality can be seen from the fact that $\phi \circ \phi^{-1} = \
 The quantity $\frac{\partial \phi^{-1}}{\partial y}$ is the Jacobian of the inverse map. It is a matrix of size $d\times d$ containing $J_{ij} = \frac{d\phi^{-1}_i}{dx_j}$.
 Depending on the task at hand, evaluation of likelihood or sampling, the formulation in $\eqref{eq:changevar}$ or $\eqref{eq:changevar-alt}$ is preferred (Friedman, 1987; Chen & Gopinath, 2000).
 
-<div markdown="1" class="my-success">
-#### Example: Transformation of 1D Gaussian variables by linear map
+<details markdown="1" class="my-success my-box" id="example-1d-gaussian-by-linear-map">
+<summary>Example: Transformation of 1D Gaussian variables by linear map</summary>
+
+<div markdown="1">
 
 Suppose $\phi$ is a linear function of the form
 
@@ -298,6 +344,8 @@ If we make the choice of $a = 1$ and $b = \mu$, then we get $\mathcal{N}(\mu, 1)
 </div>
 
 </div>
+
+</details>
 
 Transforming a base distribution $q_0$ into another $p_1$ via a transformation $\phi$ is interesting, yet its direct application in generative modelling is limited. In generative modelling, the aim is to approximate a distribution using only the available samples. Therefore, this task requires the transformation $\phi$ to map samples from a "simple" distribution, such as $\mathcal{N}(0,I)$, to approximately the data distribution. However, a straightforward linear transformation, as in the previous example, is inadequate due to the highly non-Gaussian nature of the data distribution. This brings us to a neural network as a flexible transformation $\phi_\theta$. The key task then becomes optimising the neural net's parameters $\theta$.
 
@@ -470,11 +518,12 @@ One may legitimately wonder why should we bother with such *time-continuous* flo
 
 Now that you know why CNFs are cool, let's have a look at what such a flow would be for a simple example.
 
+<details markdown="1" class="my-success my-box" id="example-gaussian-to-gaussian">
+<summary>
+Example: Gaussian to a Gaussian (1D)
+</summary>
 
-<div markdown="1" class="my-success">
-#### A simple example: $u_t$ from a Gaussian to a Gaussian
-{:.no_toc}
-
+<div markdown="1">
 Let's come back to our earlier example of mapping a 1D Gaussian to another one with different mean.
 In contrast to previously where we derived a 'one-shot' (i.e. *discrete*) flow bridging between the two Gaussians, we now aim to derive a time-*continuous flow* $\phi_t$ which would correspond to the time integrating a vector field $u_t$.
 
@@ -505,7 +554,7 @@ which is visualized in the figure below.
   alt="$\phi_t(x_0)$ for a few samples $x_0 \sim p_0 = \mathcal{N}(0, 1)$ coloured according to $p_0(x_0)$."
   ref="heatmap-colored-trajs.png"
   src="flow-matching/heatmap-colored-trajs.png"
-  width=400
+  width=600
 %}  
 
 </div>
@@ -540,7 +589,7 @@ Hence we have a probability path $p_t = \mathcal{N}(\mu t, 1)$ bridging $p_0$ an
   alt="Probability path $p_t = \mathcal{N}(\mu t, 1)$ from $p_0 = \mathcal{N}(0, 1)$ to $p_1 = \mathcal{N}(\mu, 1)$."
   ref="heatmap-colored.png"
   src="flow-matching/heatmap-colored.png"
-  width=400
+  width=600
 %}  
     
 </div>
@@ -583,7 +632,7 @@ We could of course have gone the other way, i.e. define the $u_t$ such that $p_0
 
 </div>
 
-
+</details>
 
 #### Training CNFs
 {:.no_toc}
@@ -640,7 +689,12 @@ Of course, this requires knowledge of a *valid* $u(t, x)$, and if we already hav
 
 This is where *Conditional* Flow Matching (CMF) comes to the rescue.
 
-<div markdown="1" class="my-info">
+<details markdown="1" class="my-info my-box" open="true">
+<summary>
+Non-uniqueness of vector field
+</summary>
+
+<div markdown="1">
 
 We say *a valid* $u_t$ because there is no *unique* vector field $u_t$; there are indeed many valid choices for $u_t$ inducing maps $p_0 \overset{\phi}{\longleftrightarrow} p_1$ as illustrated in the [figure](#figure-forward_samples-one-color-1) below. As we will see in what follows, in practice we have to pick a particular target $u_t$, which has practical implications.
 
@@ -718,6 +772,8 @@ Figure 7: *Different paths with the same endpoints marginals[^interpolation].*
 </div>
 </div>
 </div>
+
+</details>
 
 <!-- > [name=Tor Erlend Fjelde] TODO: add footnote on details. -->
 
@@ -818,15 +874,15 @@ $$
   &= - \int \hlfour{\nabla} \cdot \big( u_t(x \mid x_1) p_t(x \mid x_1) q(x_1) \big) \dd{x_1} \\
   &= - \hlfour{\nabla} \cdot \int u_t(x \mid x_1) p_t(x \mid x_1) q(x_1) \dd{x_1} \\
   &= - \nabla \cdot \bigg( \int u_t(x \mid x_1) \frac{p_t(x \mid x_1) q(x_1)}{\hlthree{p_t(x)}} \hlthree{p_t(x)} \dd{x_1} \bigg) \\
-  &= - \nabla \cdot \bigg( \hltwo{\int u_t(x \mid x_1) \frac{p_t(x \mid x_1) q(x_1)}{p_t(x)} \dd{x_1}} \ \hlthree{p_t(x)} \bigg) \\
-  &= - \nabla \cdot \big( \hltwo{u_t(x)} \hlthree{p_t(x)} \big)
+  &= - \nabla \cdot \bigg( \hltwo{\int u_t(x \mid x_1) \frac{p_t(x \mid x_1) q(x_1)}{p_t(x)} \dd{x_1}} \ {\hlthree{p_t(x)}} \bigg) \\
+  &= - \nabla \cdot \big( \hltwo{u_t(x)} {\hlthree{p_t(x)}} \big)
 \end{split}
 \end{equation*}
 $$
 
 where in the $\hlone{\text{first highlighted step}}$ we used \eqref{eq:continuity-cond} and in the $\hltwo{\text{last highlighted step}}$ we used the expression of $u_t(x)$ in \eqref{eq:cf-from-cond-vf}.
 
-The relation between $\phi_t(x_0)$, $\phi_t(x_0 \mid x_1)$ and their induced densities are illustrated in the [Figure 9](#figure-flow-matching-diagram) below. And since $\phi_t(x_0)$ and $\phi_t(x_0 \mid x_1)$ are solutions corresponding to the vector fields $u_t(x)$ and $u_t(x \mid x_1)$ with $x(0) = x_0$, [Figure 9](#figure-flow-matching-diagram) is equivalent to [Figure 10](#figure-flow-matching-diagram-2).
+The relation between $\phi_t(x_0)$, $\phi_t(x_0 \mid x_1)$ and their induced densities are illustrated in the [Figure 9](#figure-flow-matching-diagram) below. And since $\phi_t(x_0)$ and $\phi_t(x_0 \mid x_1)$ are solutions corresponding to the vector fields $u_t(x)$ and $u_t(x \mid x_1)$ with $x(0) = x_0$, [Figure 9](#figure-flow-matching-diagram) is equivalent to [Figure 10](#figure-flow-matching-diagram-2), but note the difference in the expectation taken to go from $u_t(x_0 \mid x_1) \longrightarrow u_t(x_0)$ compared to $\phi_t(x_0 \mid x_1) \longrightarrow \phi_t(x_0)$.
 
 <div markdown="1" class="my-center">
 <div>
@@ -861,9 +917,12 @@ The relation between $\phi_t(x_0)$, $\phi_t(x_0 \mid x_1)$ and their induced den
 </div>
 </div>
 
+<details markdown="1" class="my-info my-box" open="true">
+<summary>
+Gaussian to Gaussian (2D) using a conditional flow
+</summary>
 
-<div markdown="1" class="my-info">
-
+<div markdown="1">
 
 Let's try to gain some intuition behind \eqref{eq:cf-from-cond-vf} and the relation between $u_t(x)$ and $u_t(x \mid x_1)$.
 We do so by looking at the following scenario
@@ -982,6 +1041,8 @@ From the above figures, we can immediately see how for small $t$, i.e. near 0, t
 
 </div>
 
+</details>
+
 
 Moreover, equipped with the knowledge of \eqref{eq:cf-from-cond-vf}, we can replace
 $$
@@ -1081,7 +1142,7 @@ $$
 
 as shown in the proof below.
 
-<details>
+<details class="my-proof my-box">
 <summary>Proof</summary>
 
 We have
@@ -1153,9 +1214,13 @@ The simplest solution to the above is then just
 
 </details>
 
-<div markdown="1" class="my-success">
-#### Example: Linear interpolation
-{:.no_toc}
+<!-- Example begin -->
+<details markdown="1" class="my-success my-box" id="example-linear-interpolation" open="true">
+<summary>
+Example: Linear interpolation
+</summary>
+
+<div markdown="1">
 
 A simple choice for the mean $\mu_t(x_1)$ and std. $\sigma_t(x_1)$ is the linear interpolation for both, i.e.
 
@@ -1229,12 +1294,16 @@ Below you can see the difference between $\phi_t(x_0)$ (top figure) and $\phi_t(
 
 </div>
 
+</details>
+
+<!-- Example end -->
+
 
 <!-- 
-<div markdown="1" class="my-success">
+<div markdown="1" class="my-success my-box">
 The _conditional_ vector field is the OT map!
 </div>
-<div markdown="1" class="my-warning">
+<div markdown="1" class="my-warning my-box">
 Does not guarantee that the _marginal_ vector field is the OT map!
 </div>
 -->
@@ -1256,7 +1325,7 @@ remove diffusion vf
 ### (conditional) OT vf
 - $\mu_t = t x_1$ and $\sigma_t = 1 - t = (1 - (1 - \sigma_{\min})t$
 - $u_t(x|x_1) = \frac{1}{1 - t}(x_1 - x) = \frac{1}{1 - (1 - \sigma_\min)t}(x_1 - (1 - \sigma_\min)x)$
-<div markdown="1" class="my-warning">
+<div markdown="1" class="my-warning my-box">
 Does not guarantee that the _marginal_ vector field is the OT map!
 </div>
 
@@ -1506,7 +1575,7 @@ $$
 p_t(x_t) = \int p_t(x_t \mid z) q(z) \dd{z} = \int p_t(x_t \mid x_1, x_0) q(x_1, x_0) \dd{x_1} \dd{x_0}.
 $$
 
-<div markdown="1" class="my-info">
+<div markdown="1" class="my-info my-box">
 
 The following boundary condition on $p_t(x_t \mid x_1, x_0)$: $p_0(\cdot \mid x_1, x_0)=\delta_{x_0}$ and $p_1(\cdot \mid x_1, x_0) = \delta_{x_1}$ is required so that the marginal has the proper conditions $p_0 = q_0$ and $p_1 = q_1$.
 
