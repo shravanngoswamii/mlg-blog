@@ -3,10 +3,10 @@ layout:      post
 title:       "Flow Matching"
 tags:        [diffusion model, normalising flows, generative modelling]
 authors:
-    - name: Emile Mathieu
-      link: www.emilemathieu.fr
     - name: Tor Fjelde
       link: https://retiredparkingguard.com/about.html
+    - name: Emile Mathieu
+      link: www.emilemathieu.fr
     - name: Vincent Dutordoir
       link: https://vdutor.github.io/
 comments:    true
@@ -151,9 +151,7 @@ $$
 
 # Introduction
 
-<a href="https://imgflip.com/i/840k1z"><img src="https://i.imgflip.com/840k1z.jpg" title="New kid on the block."/></a>
-
-*Flow matching (FM)* is a new generative modelling paradigm which has rapidly been gaining popularity in the deep probabilistic ML community. Flow matching combines aspects from *Continuous Normalising Flows (CNFs)* and *Diffusion Models (DMs)*, alleviating key issues both methods have. In this blogpost we'll cover the main ideas and unique properties of FM models starting from the basics.
+*Flow matching (FM)* is a recent generative modelling paradigm which has rapidly been gaining popularity in the deep probabilistic ML community. Flow matching combines aspects from *Continuous Normalising Flows (CNFs)* and *Diffusion Models (DMs)*, alleviating key issues both methods have. In this blogpost we'll cover the main ideas and unique properties of FM models starting from the basics.
 
 
 ## Generative Modelling
@@ -331,7 +329,7 @@ expensive (as it would require $d$ automatic differentation passes in the flow) 
 
 **Full-rank residual** (Behrmann et al., 2019; Chen et al., 2010)
 
-Expressive flows relying on a residual connection have been proposed an intersting middle-ground betweem expressivity and efficient determinant estimation. They take the form:
+Expressive flows relying on a residual connection have been proposed as an interesting middle-ground between expressivity and efficient determinant estimation. They take the form:
 $$
 \begin{equation}
 \label{eq:full_rank_res}
@@ -1730,7 +1728,7 @@ Please cite us as:
 ```
 @misc{mathieu2024flow,
   title   = "An Introduction to Flow Matching",
-  author  = "Mathieu, Emile and Fjelde, Tor and Dutordoir, Vincent",
+  author  = "Fjelde, Tor amd Mathieu, Emile and Dutordoir, Vincent",
   journal = "https://mlg.eng.cam.ac.uk/blog/",
   year    = "2024",
   month   = "January",
@@ -1738,6 +1736,10 @@ Please cite us as:
 }
 ```
  
+# Acknowledgments
+
+We deeply thank Michael Albergo, Valentin Debortoli and James Thornton for giving insightful feedback!
+
 # References
 
 - Michael S. Albergo & Eric Vanden-Eijnden (2023) [Building Normalizing Flows with Stochastic Interpolants](https://openreview.net/pdf?id=li7qeBbCR1t).
