@@ -257,12 +257,12 @@ Let $\phi: \mathbb{R}^d \rightarrow \mathbb{R}^d$ be a continuously differentiab
 Let $q_0(x)$ be a density on $\mathbb{R}^d$ and let $p_1(\cdot)$ be the density induced by the following sampling procedure
 
 $$
-\begin{equation}
+\begin{equation*}
 \begin{split}
 x &\sim q_0 \\
 y &= \phi(x),
 \end{split}
-\end{equation}
+\end{equation*}
 $$
 
 which corresponds to transforming the samples of $q_0$ by the mapping $\phi$.
@@ -369,9 +369,9 @@ Let's denote the induced parametric density by the flow $\phi_\theta$ as $p_1 \t
 A natural optimisation objective for learning the parameters $\theta \in \Theta$ is to consider maximising the probability of the data under the model:
 
 $$
-\begin{equation}
+\begin{equation*}
 \textrm{argmax}_{\theta}\ \ \mathbb{E}_{x\sim \mathcal{D}} [\log p_1(x)].
-\end{equation}
+\end{equation*}
 $$
 
 Parameterising $\phi_\theta$ as a deep neural network leads to several constraints:
@@ -421,18 +421,18 @@ As opposed to auto-regressive flows (Huang et al., 2018, Larochelle and Murray, 
 We can also compose such flows to get a new flow:
 
 $$
-\begin{equation}
+\begin{equation*}
 \phi = \phi_K \circ \ldots \circ \phi_2 \circ \phi_1.
-\end{equation}
+\end{equation*}
 $$
 
 This can be a useful way to construct move expressive flow!
 The model's log-likelihood is then given by summing each flow's contribution
 
 $$
-\begin{equation}
+\begin{equation*}
 \log q(y) = \log p(\phi^{-1}(y)) + \sum_{k=1}^K \log \det\left[\frac{\partial \phi_k^{-1}}{\partial x_{k+1}}(x_{k+1})\right]
-\end{equation}
+\end{equation*}
 $$
 
 with $x_k = \phi_K^{-1} \circ \ldots \circ \phi^{-1}_{k} (y)$.
@@ -445,34 +445,34 @@ $\phi(x) = x + \delta \ u(x)$
 for some $\delta > 0$ and Lipschitz residual connection $u$. We can re-arrange this to get
 
 $$
-\begin{equation}
+\begin{equation*}
 \frac{\phi(x) - x}{\delta} = u(x)
-\end{equation}
+\end{equation*}
 $$
 
 which is looking awfully similar to $u$ being a derivative. In fact, letting $\delta = 1/K$ and taking the limit $K \rightarrow \infty$ under certain conditions[^ODE_conditions], a composition of residual flows $\phi_K \circ \cdots \circ \phi_2 \circ \phi_1$ is given by an ordinary differential equation (ODE):
 
 $$
-\begin{equation}
+\begin{equation*}
 \frac{\dd x_t}{\dd t} = \lim_{\delta \rightarrow 0} \frac{x_{t+\delta} - x_t}{\delta} = \frac{\phi_t(x_t) - x_t}{\delta} = u_t(x_t)
-\end{equation}
+\end{equation*}
 $$
 
 where the *flow* of the ODE $\phi_t: [0,1]\times\mathbb{R}^d\rightarrow\mathbb{R}^d$ is defined such that
 
 $$
-\begin{equation}
+\begin{equation*}
 \frac{d\phi_t}{dt} = u_t(\phi_t(x_0)).
-\end{equation}
+\end{equation*}
 $$
 
 <!--  -->
 That is, $\phi_t$ maps initial condition $x_0$ to the ODE solution at time $t$:
 
 $$
-\begin{equation}
+\begin{equation*}
 x_t \triangleq \phi_t(x_0) = x_0 + \int_{0}^t u_s(x_s) \dd{s} .
-\end{equation}
+\end{equation*}
 $$
 
 
@@ -484,10 +484,10 @@ Of course, this only defines the map $\phi_t(x)$; for this to be a useful normal
 As it turns out, the density induced by $\phi_t$ (or equivalently $u_t$) can be computed via the following equation[^FPE]
 
 $$
-\begin{equation}
+\begin{equation*}
 \frac{\partial}{\partial_t} p_t(x_t) 
 = - (\nabla \cdot (u_t p_t))(x_t).
-\end{equation}
+\end{equation*}
 $$
 
 <!-- for some initial distribution $p_0$. -->
@@ -497,17 +497,17 @@ This statement on the time-evolution of $p_t$ is generally known as the *Transpo
 Computing the *total* derivative (as $x_t$ also depends on $t$) in log-space yields[^log_pdf] 
 
 $$
-\begin{equation}
+\begin{equation*}
 \frac{\dd}{\dd t} \log p_t(x_t) = - (\nabla \cdot u_t)(x_t)
-\end{equation}
+\end{equation*}
 $$
 
 resulting in the log density
 
 $$
-\begin{equation}
+\begin{equation*}
 \log p_t(x) = \log p_0(x_0) - \int_0^t (\nabla \cdot u_s)(x_s) \dd{s}.
-\end{equation}
+\end{equation*}
 $$
 
 Parameterising a vector field neural network $u_\theta: \mathbb{R}_+ \times \mathbb{R^d} \rightarrow \mathbb{R^d}$ therefore induces a parametric log-density 
@@ -519,9 +519,9 @@ $$
 In practice, to compute $\log p_t$ one can either solve both the time evolution of $x_t$ and its log density $\log p_t$ jointly
 
 $$
-\begin{equation}
+\begin{equation*}
 \frac{\dd}{\dd t} \Biggl( \begin{aligned} x_t \ \quad \\ \log p_t(x_t) \end{aligned} \Biggr) = \Biggl( \begin{aligned} u_\theta(t, x_t) \quad \\ - \div u_\theta(t, x_t) \end{aligned} \Biggr),
-\end{equation}
+\end{equation*}
 $$
 
 or solve only for $x_t$ and then use quadrature methods to estimate $\log p_t(x_t)$.
@@ -550,9 +550,9 @@ In contrast to previously where we derived a 'one-shot' (i.e. *discrete*) flow b
 We have the following two distributions
 
 $$
-\begin{equation}
+\begin{equation*}
 p_0 = \mathcal{N}(0, 1) \quad \text{and} \quad p_1 = \mathcal{N}(\mu, 1).
-\end{equation}
+\end{equation*}
 $$
 
 <!-- i.e two simple Gaussians but with different means. -->
@@ -561,9 +561,9 @@ $$
 It's not difficult to see that we can continuously bridge between these with a simple linear transformation
 
 $$
-\begin{equation}
+\begin{equation*}
 \phi(t, x_0) = x_0 + \mu t
-\end{equation}
+\end{equation*}
 $$
 
 which is visualized in the figure below.
@@ -591,17 +591,17 @@ which is visualized in the figure below.
 By linearity, we know that every marginal $p_t$ is a Gaussian, and so
 
 $$
-\begin{equation}
+\begin{equation*}
 \mathbb{E}_{p_0}[\phi_t(x_0)] = \mu t
-\end{equation}
+\end{equation*}
 $$
 
 which, in particular, implies that $\mathbb{E}_{p_0}[\phi_1(x_0)] = \mu = \mathbb{E}\_{p_1}[x_1]$. Similarly, we have
 
 $$
-\begin{equation}
+\begin{equation*}
 \mathrm{Var}_{p_0}[\phi_t(x_0)] = 1 \quad \implies \quad \mathrm{Var}_{p_0}[\phi_1(x_0)] = 1 = \mathrm{Var}_{p_1}[x_1]
-\end{equation}
+\end{equation*}
 $$
 
 Hence we have a probability path $p_t = \mathcal{N}(\mu t, 1)$ bridging $p_0$ and $p_1$.
@@ -632,33 +632,33 @@ Hence we have a probability path $p_t = \mathcal{N}(\mu t, 1)$ bridging $p_0$ an
 Now let's determine what the vector field $u_t(x)$ would be in this case. As mentioned earlier, $u(t, x)$ should satisfy the following
 
 $$
-\begin{equation}
+\begin{equation*}
 \dv{\phi_t}{t}(x_0) = u_t \big( \phi_t(x_0) \big).
-\end{equation}
+\end{equation*}
 $$
 
 Since we have already specified $\phi$, we can plug it in on the left hand side to get
 
 $$
-\begin{equation}
+\begin{equation*}
 \dv{\phi_t}{t}(x_0) = \dv{t} \big( x_0 + \mu t \big) = \mu
-\end{equation}
+\end{equation*}
 $$
 
 which gives us
 
 $$
-\begin{equation}
+\begin{equation*}
 \mu = u_t \big( x_0 + \mu t \big).
-\end{equation}
+\end{equation*}
 $$
 
 The above needs to hold for *all* $t \in [0, 1]$, and so it's not too difficult to see that one such solution is the constant vector field
 
 $$
-\begin{equation}
+\begin{equation*}
 u_t(x) = \mu.
-\end{equation}
+\end{equation*}
 $$
 
 We could of course have gone the other way, i.e. define the $u_t$ such that $p_0 \overset{u_t}{\longleftrightarrow} p_1$ and derive the corresponding $\phi_t$ by solving the ODE.
@@ -700,24 +700,24 @@ Flow matching is a simulation-free way to train CNF models where we directly for
 <!-- \label{eq:fm-objective} -->
 
 $$
-\begin{equation}
+\begin{equation*}
 \mathcal{L}(\theta)_{} = \mathbb{E}_{t \sim \mathcal{U}[0, 1]} \mathbb{E}_{x \sim p_t}\left[\|
 u_\theta(t, x) - u(t, x) \|^2 \right].
-\end{equation}
+\end{equation*}
 $$
 
 In the equation above, $u(t, x)$ would be a vector field inducing a *probability path* (or bridge) $p_t$ interpolating the reference $p_0$ to $p_1$, i.e.
 
 $$
-\begin{equation}
+\begin{equation*}
 \log p_1(x) = \log p_0 - \int_0^1 (\nabla \cdot u_t)(x_t) \dd{t}.
-\end{equation}
+\end{equation*}
 $$
 
 <!-- $$
-\begin{equation}
+\begin{equation*}
 \pdv{p_t(x)}{t} = - \nabla \cdot \big( u_t(x) p_t(x) \big),
-\end{equation}
+\end{equation*}
 $$ -->
 
 In words: we're just performing regression on $u_t(x)$ for all $t \in [0, 1]$.
@@ -822,9 +822,9 @@ Figure 7: *Different paths with the same endpoints marginals[^interpolation].*
 First, let's remind ourselves that the transport equation relates a vector field $u_t$ to (the time evolution of) a probability path $p_t$
 
 $$
-\begin{equation}
+\begin{equation*}
 \pdv{p_t(x)}{t} = - \nabla \cdot \big( u_t(x) p_t(x) \big),
-\end{equation}
+\end{equation*}
 $$
 
 thus constructing $p_t$ or $u_t$ is *equivalent*.
@@ -836,9 +836,9 @@ In addition, as opposed to the marginal $p_t$ , the conditional $p_{t\mid1}$ cou
 In particular, as we have access to data samples $x_1 \sim q_1$, it sounds pretty reasonable to condition on $z=x_1$, leading to the following marignal probabilithy path
 
 $$
-\begin{equation}
+\begin{equation*}
 p_t(x_t) = \int q_1(x_1) ~p_{t\mid 1}(x_t\mid x_1) \dd{x_1}.
-\end{equation}
+\end{equation*}
 $$
 
 
@@ -847,9 +847,9 @@ $$
 In this setting, the conditional probability path $p_{t\mid 1}$ need to satisfy the boundary conditions
 
 $$
-\begin{equation}
+\begin{equation*}
 p_0(x \mid x_1) = p_0 \quad \text{and} \quad p_1(x \mid x_1) = \mathcal{N}(x; x_1, \sigmamin^2 I) \xrightarrow[\sigmamin \rightarrow 0]{} \delta_{x_1}(x)
-\end{equation}
+\end{equation*}
 $$
 
 with $\sigmamin > 0$ small, and for whatever reference $p_0$ we choose, typically something "simple" like $p_0(x) = \mathcal{N}(x; 0, I)$, as illustrated in the [figure](#figure-heatmap_with_cond_traj-v3) below.
@@ -879,9 +879,9 @@ $$
 <!-- Lipman et al. (2023) introduced the notion of **Conditional Flow Matching (CFM)** by noticing that the *conditional* vector field $u_t(x \mid x_1)$, which satisfies the transport equation for the conditional density $p_t(x \mid x_1)$
 \label{eq:continuity-cond-2}
 $$
-\begin{equation}
+\begin{equation*}
 \pdv{p_t(x \mid x_1)}{t} = - \nabla \cdot \big( u_t(x \mid x_1) p_t(x \mid x_1) \big),
-\end{equation}
+\end{equation*}
 $$
  -->
 Lipman et al. (2023) introduced the notion of **Conditional Flow Matching (CFM)** by noticing that this *conditional* vector field $u_t(x \mid x_1)$
@@ -902,9 +902,9 @@ $$
 To see why this $u_t$ the same the vector field as the one defined earlier, i.e. the one generating the (marginal) pribability path $p_t$, we need to show that the expression above for the marginal vector field $u_t(x)$ satisfies the transport equation
 
 $$
-\begin{equation}
+\begin{equation*}
 \pdv{\hlthree{p_t(x)}}{t} = - \nabla \cdot \big( \hltwo{u_t(x)} \hlthree{p_t(x)} \big).
-\end{equation}
+\end{equation*}
 $$
 
 Writing out the left-hand side, we have
@@ -1039,13 +1039,13 @@ $$
 \begin{equation*}
 \begin{split}
 u_t \big( \phi_t(x_0) \big) 
-&= \E_{p_{1|t}}\left[u_t \big( \phi_t(x_0) \mid x_1 \big)\right] \\
-&\approx \frac{1}{n} \sum_{i = 1}^n u_t \big( \phi_t(x_0) \mid x_1^{(i)} \big) \ \text{with } x_1^{(i)} \sim p_{1|t}(x_1 \mid \phi_t(x_0)).
+&= \E_{p_{1 \mid t}}\left[u_t \big( \phi_t(x_0) \mid x_1 \big)\right] \\
+&\approx \frac{1}{n} \sum_{i = 1}^n u_t \big( \phi_t(x_0) \mid x_1^{(i)} \big) \ \text{with } x_1^{(i)} \sim p_{1 \mid t}(x_1 \mid \phi_t(x_0)).
 \end{split}
 \end{equation*}
 $$
 
-In practice we don't have access to the posterior $$p_{1|t}(x_1|x_t)$$, but in this specific setting we do have closed-form expressions for everything (Albergo & Vanden-Eijnden, 2022), and so we can visualise the marginal vector field $$u_t\big( \phi_t(x_0)\big)$$ and the conditional vector fields $$u_t \big( \phi_t(x_0) \mid x_1^{(i)} \big)$$ for all our "data" samples $$x_1^{(i)}$$ and see how they compare.
+In practice we don't have access to the posterior $$p_{1 \mid t}(x_1 \mid x_t)$$, but in this specific setting we do have closed-form expressions for everything (Albergo & Vanden-Eijnden, 2022), and so we can visualise the marginal vector field $$u_t\big( \phi_t(x_0)\big)$$ and the conditional vector fields $$u_t \big( \phi_t(x_0) \mid x_1^{(i)} \big)$$ for all our "data" samples $$x_1^{(i)}$$ and see how they compare.
 This is shown in the figure below.
 
 <div markdown="1" class="my-center">
@@ -1088,7 +1088,7 @@ Figure 13: Marginal vector field $u_t(x)$ vs. conditional vector field $u_t(x \m
 </div>
 
 <!-- From the above figures, we can immediately see how for small $t$, i.e. near 0, the IS weights for the different data points $x_1^{(i)}$ are basically all the same, but as $t$ increases and get closer to 1 the estimator is dominated by only a few data samples. -->
-From the above figures, we can immediately see how for small $t$, i.e. near 0, the posterior $p_{1|t}(x_1|x_t)$ is quite scattered so the marginalisation giving $u_t$ involves many equally likely data samples $x_1$. In contrast, when $t$ increases and get closer to 1, $p_{1|t}(x_1|x_t)$ gets quite concentrated over much fewer samples $x_1$.
+From the above figures, we can immediately see how for small $t$, i.e. near 0, the posterior $p_{1 \mid t}(x_1 \mid x_t)$ is quite scattered so the marginalisation giving $u_t$ involves many equally likely data samples $x_1$. In contrast, when $t$ increases and get closer to 1, $p_{1 \mid t}(x_1 \mid x_t)$ gets quite concentrated over much fewer samples $x_1$.
 
 </div>
 
@@ -1108,18 +1108,18 @@ where  $u_t(x) = \mathbb{E}\_{x_1 \sim p_{1 \mid t}} \left[ u_t(x \mid x_1) \rig
 with an equivalent loss regressing the *conditional* vector field $u_t(x \mid x_1)$ and marginalising $x_1$ instead:
 
 $$
-\begin{equation}
+\begin{equation*}
 \mathcal{L}_{\mathrm{CFM}}(\theta) = \mathbb{E}_{t \sim \mathcal{U}[0, 1], x_1 \sim q, x_t \sim p_t(x \mid x_1)}\left[\|
 u_\theta(t, x) - u_t(x \mid x_1) \|^2 \right].
-\end{equation}
+\end{equation*}
 $$
 
 These losses are equivalent in the sense that
 
 $$
-\begin{equation}
+\begin{equation*}
 \nabla_\theta \mathcal{L}_{\mathrm{FM}}(\theta) = \nabla_\theta \mathcal{L}_{\mathrm{CFM}}(\theta),
-\end{equation}
+\end{equation*}
 $$
 
 which implies that we can use $${\mathcal{L}}_{\text{CFM}}$$ instead to train the parametric vector field $u_{\theta}$.
@@ -1130,10 +1130,10 @@ Let's develop inner product term for $${\mathcal{L}}_{\text{FM}}$$ and show that
 $$
 \begin{align}
 \mathbb{E}_{x \sim p_t} ~\langle u_\theta(t, x), \hltwo{u_t(x)} \rangle 
-&= \int \langle u_\theta(t, x), \hltwo{\int} u_t(x|x_1) \hltwo{\frac{p_t(x|x_1)q(x_1)}{p_t(x)} dx_1} \rangle p_t(x) \mathrm{d} x \\
-&= \int \langle u_\theta(t, x), \int u_t(x|x_1) p_t(x|x_1)q(x_1) dx_1 \rangle \dd{x} \\
-&= \int \int \langle u_\theta(t, x), u_t(x|x_1) \rangle p_t(x|x_1)q(x_1) dx_1 \dd{x} \\
-&= \mathbb{E}_{q_1(x_1) p(x|x_1)} ~\langle u_\theta(t, x), u_t(x|x_1) \rangle
+&= \int \langle u_\theta(t, x), \hltwo{\int} u_t(x \mid x_1) \hltwo{\frac{p_t(x \mid x_1)q(x_1)}{p_t(x)} dx_1} \rangle p_t(x) \mathrm{d} x \\
+&= \int \langle u_\theta(t, x), \int u_t(x \mid x_1) p_t(x \mid x_1)q(x_1) dx_1 \rangle \dd{x} \\
+&= \int \int \langle u_\theta(t, x), u_t(x \mid x_1) \rangle p_t(x \mid x_1)q(x_1) dx_1 \dd{x} \\
+&= \mathbb{E}_{q_1(x_1) p(x \mid x_1)} ~\langle u_\theta(t, x), u_t(x \mid x_1) \rangle
 \end{align}
 $$
 
@@ -1144,7 +1144,7 @@ where in the $\hltwo{\text{first highlighted step}}$ we used the expression of $
 The benefit of the CFM loss being that once we define the conditional probability path $p_t(x \mid x_1)$, we can construct an unbiased Monte Carlo estimator of the objective using samples $\big( x_1^{(i)} \big)_{i = 1}^n$ from the data target $q_1$! 
 
 This estimator can be efficiently computed as it involves an expectation over the joint $q_1(x_1)p_t(x \mid x_1)$ 
-, of the conditional vector field $u_t (x \mid x_1)$ both being available as opposed to the marginal vector field $u_t$ which involves an expectation over the posterior $p_{1|t}(x_1|x)$.
+, of the conditional vector field $u_t (x \mid x_1)$ both being available as opposed to the marginal vector field $u_t$ which involves an expectation over the posterior $p_{1 \mid t}(x_1 \mid x)$.
 
 
 <!-- We also restrict to conditional paths whose vector field $u_t(x \mid x_1)$ is "simple enough" so that we can compute it in closed form. But, as we'll see, this is not too difficult to achieve. -->
@@ -1155,11 +1155,11 @@ We note that, as opposed to the log-likelihood maximisation loss of CNFs which d
 
 To do so we construct a _probability path_ $p_t$ which interpolates between the reference (i.e. noise) distribution $q_0$ and the data distribution $q_1$, i.e. $p_{t=0}=q_0$ and $p_{t=1}=q_1 * \mathrm{N}(0, \sigma^2)$.
 
-Lipman et al. (2023) achieves this by constructing $p_t$ as mixture of simpler probability paths: $p_t \triangleq \int p_t(\cdot|x_1) q_1(x_1) \dd{x}_1$, via a _conditional probability path_ $p_t(\cdot|x_1)$ satisfying $p_1(\cdot|x_1)=\mathrm{N}(x_1, \sigma^2) \xrightarrow[\sigma \rightarrow 0]{} \delta_{x_1}$ and $p_0(\cdot|x_1)=p_0$.
+Lipman et al. (2023) achieves this by constructing $p_t$ as mixture of simpler probability paths: $p_t \triangleq \int p_t(\cdot \mid x_1) q_1(x_1) \dd{x}_1$, via a _conditional probability path_ $p_t(\cdot \mid x_1)$ satisfying $p_1(\cdot \mid x_1)=\mathrm{N}(x_1, \sigma^2) \xrightarrow[\sigma \rightarrow 0]{} \delta_{x_1}$ and $p_0(\cdot \mid x_1)=p_0$.
 
 As a result both endpoints constraint are satisfied since ones recovers
-- at $t=1$ the data distribution $p_1(x) = \int p_1(x|x_1) q_1(x_1) \dd{x}_1 = \int \mathrm{N}(x_1, \sigma^2) q_1(x_1) \dd{x}_1 \xrightarrow[\sigma \rightarrow 0]{} q_1(x)$
-- at $t=0$ the reference distribution $p_0(x) = \int p_0(x|x_1) q_1(x_1) \dd{x}_1 = \int q_0(x) q_1(x_1) \dd{x}_1 = q_0(x)$.
+- at $t=1$ the data distribution $p_1(x) = \int p_1(x \mid x_1) q_1(x_1) \dd{x}_1 = \int \mathrm{N}(x_1, \sigma^2) q_1(x_1) \dd{x}_1 \xrightarrow[\sigma \rightarrow 0]{} q_1(x)$
+- at $t=0$ the reference distribution $p_0(x) = \int p_0(x \mid x_1) q_1(x_1) \dd{x}_1 = \int q_0(x) q_1(x_1) \dd{x}_1 = q_0(x)$.
 
 <div markdown="1" style="display: flex; margin-top:-0px; margin-bottom:-0px;">
 <div markdown="1" style="margin: auto;">
@@ -1168,9 +1168,9 @@ As a result both endpoints constraint are satisfied since ones recovers
 </div>
 </div>
 
-We have defined a probability path $p_t$ in terms of conditional probability path $p_t(\cdot|x_1)$, yet how do we define the latter?
+We have defined a probability path $p_t$ in terms of conditional probability path $p_t(\cdot \mid x_1)$, yet how do we define the latter?
 We know that the transport equation $\frac{\partial}{\partial_t} p_t(x_t) = - (\nabla \cdot (u_t p_t))(x_t)$ relates a vector field (i.e. vector field) to a propability path $p_t$ (given an initial value $p_{t=0} = q_0$).
-As such it is sufficient to construct a _conditional vector field_ $u_t(\cdot|x_1)$ which induces a conditional probability path $p_t(\cdot|x_1)$ with the right boundary conditions.
+As such it is sufficient to construct a _conditional vector field_ $u_t(\cdot \mid x_1)$ which induces a conditional probability path $p_t(\cdot \mid x_1)$ with the right boundary conditions.
 
 -->
 
@@ -1179,21 +1179,21 @@ As such it is sufficient to construct a _conditional vector field_ $u_t(\cdot|x_
 Let's now look at practical example of conditional vector field and the corresponding probability path. Suppose we want conditional vector field which generates a path of Gaussians, i.e.
 
 $$
-\begin{equation}
+\begin{equation*}
 p_t(x \mid x_1) = \mathcal{N}(x; \mu_t(x_1), \sigma_t(x_1)^2 \mathrm{I})
-\end{equation}
+\end{equation*}
 $$
 
 for some mean $\mu_t(x_1)$ and standard deviation $\sigma_t(x_1)$.
 
-<!-- This means one can sample $x_t|x_1 ~ p_t(\cdot|x_1)$ as $x_t = \phi(x_0|x_1)$ with $\phi(x|x_1) = \sigma_t(x_1) x + \mu_t(x_1)$ and $x_0 \sim \mathcal{N}(0, \mathrm{I})$. -->
+<!-- This means one can sample $x_t \mid x_1 ~ p_t(\cdot \mid x_1)$ as $x_t = \phi(x_0 \mid x_1)$ with $\phi(x \mid x_1) = \sigma_t(x_1) x + \mu_t(x_1)$ and $x_0 \sim \mathcal{N}(0, \mathrm{I})$. -->
 <!--  -->
 One conditional vector field inducing the above-defined conditional probability path is given by the following expression:
 
 $$
 \begin{equation}
 \label{eq:gaussian-path}
-u_t(x|x_1) = \frac{\dot{\sigma_t}(x_1)}{\sigma_t(x_1)} (x - \mu_t(x_1)) + \dot{\mu_t}(x_1)
+u_t(x \mid x_1) = \frac{\dot{\sigma_t}(x_1)}{\sigma_t(x_1)} (x - \mu_t(x_1)) + \dot{\mu_t}(x_1)
 \end{equation}
 $$
 
@@ -1205,17 +1205,17 @@ as shown in the proof below.
 We have
 
 $$
-\begin{equation}
+\begin{equation*}
 \phi_t(x \mid x_1) = \mu_t(x_1) + \sigma_t(x_1) x
-\end{equation}
+\end{equation*}
 $$
 
 and we want to determine $u_t(x \mid x_1)$ such that
 
 $$
-\begin{equation}
+\begin{equation*}
 \frac{\dd}{\dd t} \phi_t(x) = u_t \big( \phi_t(x) \mid x_1 \big)
-\end{equation}
+\end{equation*}
 $$
 
 First note that the LHS is
@@ -1232,59 +1232,59 @@ $$
 so we have
 
 $$
-\begin{equation}
+\begin{equation*}
 \dot{\mu_t}(x_1) + \dot{\sigma_t}(x_1) x = u_1 \big( \phi_t(x \mid x_1) \mid x_1 \big)
-\end{equation}
+\end{equation*}
 $$
 
 Suppose that $u_1$ is of the form
 
 $$
-\begin{equation}
+\begin{equation*}
 u_1\big( \phi_t(x) \mid x_1\big) = h\big(t, \phi_t(x), x_1\big) \dot{\mu_t}(x_1) + g\big(t, \phi_t(x), x_1\big) \dot{\sigma_t}(x_1)
-\end{equation}
+\end{equation*}
 $$
 
 for some functions $h$ and $g$.
 Reading of the components from the previous equation, we then see that we require
 
 $$
-\begin{equation}
+\begin{equation*}
 h\big(t, \phi_t(x), x_1\big) = 1 \quad \text{and} \quad
 g(t, \phi_t(x), x_1) = x
-\end{equation}
+\end{equation*}
 $$
 
 The simplest solution to the above is then just
 
 $$
-\begin{equation}
+\begin{equation*}
 h(t, x, x_1) = 1
-\end{equation}
+\end{equation*}
 $$
 
 i.e. constant function, and
 
 $$
-\begin{equation}
+\begin{equation*}
 g(t, x, x_1) = \phi_t^{-1}(x) = \frac{x - \mu_t(x_1)}{\sigma_t(x_1)}
-\end{equation}
+\end{equation*}
 $$
 
 such that
 
 $$
-\begin{equation}
+\begin{equation*}
 g\big(t, \phi_t(x), x_1) = \phi_t^{-1} \big( \phi_t(x) \big) = x
-\end{equation}
+\end{equation*}
 $$
 
 resulting in
 
 $$
-\begin{equation}
+\begin{equation*}
 u_t \big( x \mid x_1 \big) = \dot{\mu_t}(x_1) + \dot{\sigma_t}(x_1) \bigg( \frac{x - \mu_t(x_1)}{\sigma_t(x_1)} \bigg)
-\end{equation}
+\end{equation*}
 $$
 
 as claimed.
@@ -1311,9 +1311,9 @@ $$
 so that
 
 $$
-\begin{equation}
+\begin{equation*}
 \big( {\hlone{\mu_0(x_1)}} + {\hlthree{\sigma_0(x_1)}} x_1 \big) \sim p_0 \quad \text{and} \quad \big( {\hlone{\mu_1(x_1)}} + {\hlthree{\sigma_1(x_1)}} x_1 \big) \sim \mathcal{N}(x_1, \sigmamin^2 I)
-\end{equation}
+\end{equation*}
 $$
 
 <!-- and so -->
@@ -1398,11 +1398,11 @@ remove diffusion vf
 - $dx_t = -\frac{1}{2}\sqrt{\beta(t)} x_t \dd{t} + \beta(t) \dd{B}_t$
 - $\alpha_t = e^{-\frac{1}{2}\int_0^t \beta(s) \dd{s}}$
 - $\mu_t = \alpha_{1-t} x_1$ and $\sigma_t^2 = 1 - \alpha_{1-t}^2$
-- $u_t(x|x_1) = -\frac{\sigma'_{1-t}}{\sigma_{1-t}}(x - x_1)$
+- $u_t(x \mid x_1) = -\frac{\sigma'_{1-t}}{\sigma_{1-t}}(x - x_1)$
 
 ### (conditional) OT vf
 - $\mu_t = t x_1$ and $\sigma_t = 1 - t = (1 - (1 - \sigma_{\min})t$
-- $u_t(x|x_1) = \frac{1}{1 - t}(x_1 - x) = \frac{1}{1 - (1 - \sigma_\min)t}(x_1 - (1 - \sigma_\min)x)$
+- $u_t(x \mid x_1) = \frac{1}{1 - t}(x_1 - x) = \frac{1}{1 - (1 - \sigma_\min)t}(x_1 - (1 - \sigma_\min)x)$
 <div markdown="1" class="my-warning my-box">
 Does not guarantee that the _marginal_ vector field is the OT map!
 </div>
@@ -1561,7 +1561,7 @@ More generally, samples from the reference distribution which are arbitrarily cl
 
 {% include image.html
   name="Figure 21"
-  alt="Variance of conditional vector field over $p_{1|t}$ for both blue and red trajectories for \eqref{eq:mog2mog}."
+  alt="Variance of conditional vector field over $p_{1 \mid t}$ for both blue and red trajectories for \eqref{eq:mog2mog}."
   ref="variance_cond_vector_field.png"
   src="flow-matching/variance_cond_vector_field.png"
   width=400
@@ -1595,13 +1595,13 @@ There are two immediate consequences:
 <div markdown="1" class="my-image-container">
 
 ![forward_samples](https://hackmd.io/_uploads/SyG9OF_IT.png)
-*Interpolation path $\phi(x_t|x_0,x_1)$*.
+*Interpolation path $\phi(x_t \mid x_0,x_1)$*.
 
 </div>
 <div markdown="1" class="my-image-container">
 
 ![forward_samples](https://hackmd.io/_uploads/SJusOFuL6.png)
-*Inference path $\phi(x_t|x_0)$*.
+*Inference path $\phi(x_t \mid x_0)$*.
 
 </div>
 </div>
@@ -1631,7 +1631,7 @@ p_t(x_t) = \int p_t(x_t \mid z) q(z) \dd{z} = \int p_t(x_t \mid x_1) q(x_1) \dd{
 $$ 
 
 e.g. 
-$$p(x_t | x_1) = \mathcal{N}(x_t \mid x_1, (1-t)^2)$$.
+$$p(x_t  \mid  x_1) = \mathcal{N}(x_t \mid x_1, (1-t)^2)$$.
 
 
 
@@ -1655,7 +1655,7 @@ $$p(x_t | x_1) = \mathcal{N}(x_t \mid x_1, (1-t)^2)$$.
 Yet, more generally, we can consider conditioning and marginalising over latent variables $z$, and minimising the following loss:
 
 $$
-\mathcal{L}_{\mathrm{CFM}}(\theta) = \mathbb{E}_{(t,z,x_t) \sim \mathcal{U}[0,1] q(z) p(\cdot|z)}[\| u_\theta(t, x_t) - u_t(x_t|z)\|^2].
+\mathcal{L}_{\mathrm{CFM}}(\theta) = \mathbb{E}_{(t,z,x_t) \sim \mathcal{U}[0,1] q(z) p(\cdot \mid z)}[\| u_\theta(t, x_t) - u_t(x_t \mid z)\|^2].
 $$
 
 As suggested in Liu et al. (2023), Tong et al. (2023), Albergo & Vanden-Eijnden (2022) and Pooladian et al. (2023) one can condition on *both* endpoints $z=(x_1, x_0)$ of the process, referred as *two-sided conditioning*. The marginal probability path is defined as:
@@ -1693,7 +1693,7 @@ One main advantage being that this allows for non Gaussian reference distributio
 Choosing a standard normal as noise distribution $q(x_0) = \mathcal{N}(0, \mathrm{I})$ we recover the same _one-sided_ conditional probability path as earlier: 
 
 $$
-p(x_t \mid x_1) = \int p(x_t \mid x_0, x_1) q(x_0) \dd{x_0} = \mathcal{N}(x_t|tx_1, (1-t)^2).
+p(x_t \mid x_1) = \int p(x_t \mid x_0, x_1) q(x_0) \dd{x_0} = \mathcal{N}(x_t \mid tx_1, (1-t)^2).
 $$
 
 
@@ -1949,9 +1949,9 @@ We deeply thank Michael Albergo, Valentin Debortoli and James Thornton for givin
 
 [^chainrule]: The property $\phi \circ \phi^{-1} = \Id$ implies, by the chain rule,
               $$
-              \begin{equation}
+              \begin{equation*}
               \pdv{\phi}{x} \bigg|_{x = \phi^{-1}(y)} \pdv{\phi^{-1}}{y} \bigg|_{y} = 0 \iff \pdv{\phi}{x} \bigg|_{x = \phi^{-1}(y)} = \bigg( \pdv{\phi^{-1}}{y} \bigg|_{y} \bigg)^{-1} \quad \forall y \in \mathbb{R}^d
-              \end{equation}
+              \end{equation*}
               $$
 
 [^jac_structure]: **Autoregressive** (Papamakarios et al., 2018; Huang et al., 2018)
@@ -1959,9 +1959,9 @@ We deeply thank Michael Albergo, Valentin Debortoli and James Thornton for givin
                   **Low rank residual** (Van Den Berg et al., 2018)
                   Another approach is to construct a flow via a residual connection:
                   $$
-                  \begin{equation}
+                  \begin{equation*}
                   \phi(x) = x + A h(B x + b)
-                  \end{equation}
+                  \end{equation*}
                   $$
                   with parameters $A \in \R^{d\times m}$, $B \in \R^{ m\times m}$ and $b \in \R^m$. Leveraging Sylvester's determinant identity $\det(I_d + AB)=\det(I_m + BA)$, the determinant computation can be reduced to one of a $m \times m$ matrix which is advantageous if $m \mathrm{<<} d$.
                   <!-- HACK: have to use `\mathrm{<<}` because `\ll` breaks in Jekyll for some reason -->
@@ -1971,11 +1971,11 @@ We deeply thank Michael Albergo, Valentin Debortoli and James Thornton for givin
 
 [^log_pdf]: Expanding the divergence in the _transport equation_ we have:
             $$
-            \begin{equation}
+            \begin{equation*}
             \frac{\partial}{\partial_t} p_t(x_t) 
             = - (\nabla \cdot (u_t p_t))(x_t) 
             = - p_t(x_t) (\nabla \cdot u_t)(x_t) - \langle \nabla_{x_t} p_t(x_t), u_t(x_t) \rangle.
-            \end{equation}
+            \end{equation*}
             $$
             Yet since $x_t$ also depends on $t$, to get the _total derivative_ we have
             $$
@@ -1990,22 +1990,22 @@ We deeply thank Michael Albergo, Valentin Debortoli and James Thornton for givin
             Hence, $\frac{\dd}{\dd t} \log p_t(x_t) = \frac{1}{p_t(x_t)} \frac{\dd}{\dd t} p_t(x_t) = - (\nabla \cdot u_t)(x_t).$
 
 [^CFM]: Developing the square in both losses we get: 
-        $$\|u_\theta(t, x) - u_t(x|x_1)\|^2 = \|u_\theta(t, x)\|^2 + \|u_t(x|x_1)\|^2 - 2 \langle u_\theta(t, x), u_t(x|x_1) \rangle,$$
+        $$\|u_\theta(t, x) - u_t(x \mid x_1)\|^2 = \|u_\theta(t, x)\|^2 + \|u_t(x \mid x_1)\|^2 - 2 \langle u_\theta(t, x), u_t(x \mid x_1) \rangle,$$
         and
         $$\|u_\theta(t, x) - u_t(x)\|^2 = \|u_\theta(t, x)\|^2 + \|u_t(x)\|^2 - 2 \langle u_\theta(t, x), u_t(x) \rangle.$$
         Taking the expectation over the last inner product term:
         $$
         \begin{align}
         \mathbb{E}_{x \sim p_t} ~\langle u_\theta(t, x), u_t(x) \rangle 
-        &= \int \langle u_\theta(t, x), \int u_t(x|x_1) \frac{p_t(x|x_1)q(x_1)}{p_t(x)} dx_1 \rangle p_t(x) \dd{x} \\
-        &= \int \langle u_\theta(t, x), \int u_t(x|x_1) p_t(x|x_1)q(x_1) dx_1 \rangle \dd{x} \\
-        &= \int \int \langle u_\theta(t, x), u_t(x|x_1) \rangle p_t(x|x_1)q(x_1) dx_1 \dd{x} \\
-        &= \mathbb{E}_{q_1(x_1) p(x|x_1)} ~\langle u_\theta(t, x), u_t(x|x_1) \rangle.
+        &= \int \langle u_\theta(t, x), \int u_t(x|x_1) \frac{p_t(x \mid x_1)q(x_1)}{p_t(x)} dx_1 \rangle p_t(x) \dd{x} \\
+        &= \int \langle u_\theta(t, x), \int u_t(x \mid x_1) p_t(x \mid x_1)q(x_1) dx_1 \rangle \dd{x} \\
+        &= \int \int \langle u_\theta(t, x), u_t(x \mid x_1) \rangle p_t(x \mid x_1)q(x_1) dx_1 \dd{x} \\
+        &= \mathbb{E}_{q_1(x_1) p(x \mid x_1)} ~\langle u_\theta(t, x), u_t(x \mid x_1) \rangle.
         \end{align}
         $$
         Then we see that the neural network squared norm terms are equal since:
         $$
-        \mathbb{E}_{p_t} \|u_\theta(t, x)\|^2 = \int \|u_\theta(t, x)\|^2 p_t(x|x_1) q(x_1) \dd{x} \dd{x_1} = \mathbb{E}_{q_1(x_1) p(x|x_1)} \|u_\theta(t, x)\|^2
+        \mathbb{E}_{p_t} \|u_\theta(t, x)\|^2 = \int \|u_\theta(t, x)\|^2 p_t(x \mid x_1) q(x_1) \dd{x} \dd{x_1} = \mathbb{E}_{q_1(x_1) p(x \mid x_1)} \|u_\theta(t, x)\|^2
         $$
 
 [^ODE_conditions]: A sufficient condition for $\phi_t$ to be invertible is for $u_t$ to be Lipschitz and continuous by Picard–Lindelöf theorem.
