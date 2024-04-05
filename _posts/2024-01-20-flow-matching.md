@@ -1904,7 +1904,7 @@ We deeply thank Michael Albergo, Valentin Debortoli and James Thornton for givin
 
 # References
 
-- Michael S. Albergo & Eric Vanden-Eijnden (2023) [Building Normalizing Flows with Stochastic Interpolants](https://openreview.net/pdf?id=li7qeBbCR1t).
+- Albergo, Michael S. & Vanden-Eijnden, Eric (2023) [Building Normalizing Flows with Stochastic Interpolants](https://openreview.net/pdf?id=li7qeBbCR1t).
 
 - Behrmann, Jens and Grathwohl, Will and Chen, Ricky T. Q. and Duvenaud, David and Jacobsen, Joern-Henrik (2019). [Invertible Residual Networks](https://proceedings.mlr.press/v97/behrmann19a.html).
 
