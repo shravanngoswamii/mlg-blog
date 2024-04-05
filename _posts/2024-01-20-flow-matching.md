@@ -1720,6 +1720,9 @@ Similarly to CNFs, sampled can be obtained at inference time by solving the ODE 
 
 <!-- which bridge between a noise refence distribution and a target data distribution, and as such constructs a generative model. -->
 
+In this post we have not talked about diffusion (i.e. score based) models on purpose as they are not necessary for understanding flow matching.
+Yet these are deeply related and even exactly the same in some setting.
+We are planning to explore these connections, along with generalisations in a follow-up post!
 
 # Citation 
  
