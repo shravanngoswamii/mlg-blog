@@ -1889,7 +1889,7 @@ Please cite us as:
 ```
 @misc{mathieu2024flow,
   title   = "An Introduction to Flow Matching",
-  author  = "Fjelde, Tor amd Mathieu, Emile and Dutordoir, Vincent",
+  author  = "Fjelde, Tor and Mathieu, Emile and Dutordoir, Vincent",
   journal = "https://mlg.eng.cam.ac.uk/blog/",
   year    = "2024",
   month   = "January",
