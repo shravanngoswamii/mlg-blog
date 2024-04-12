@@ -208,7 +208,7 @@ $$
 ## Generative Modelling
 {:.no_toc}
 
-Let's assume we have data samples $x_1, x_2, \ldots, x_n$ from a distribution of interest $q_1(x)$, which density is unknown. We're interested in using these samples to learn a probabilistic model approximating $q_1$. In particular, we want efficient generation of new samples (approximately ) distributed from $q_1$. This task is referred to as **generative modelling**.
+Let's assume we have data samples $x_1, x_2, \ldots, x_n$ from a distribution of interest $q_1(x)$, whose density is unknown. We're interested in using these samples to learn a probabilistic model approximating $q_1$. In particular, we want efficient generation of new samples (approximately ) distributed from $q_1$. This task is referred to as **generative modelling**.
 
 The advancement in generative modelling methods over the past decade has been nothing short of revolutionary. In 2012, Restricted Boltzmann Machines, then the leading generative model, were [just about able to generate MNIST digits](https://physics.bu.edu/~pankajm/ML-Notebooks/HTML/NB17_CXVI_RBM_mnist.html). Today, state-of-the-art methods are capable of generating high-quality [images](https://openai.com/dall-e-3), [audio](https://deepmind.google/discover/blog/transforming-the-future-of-music-creation/) and [language](https://arxiv.org/pdf/2305.14671.pdf), as well as model complex [biological](https://www.nature.com/articles/s41586-023-06415-8) and [physical](https://deepmind.google/discover/blog/nowcasting-the-next-hour-of-rain/) systems. Unsurprisingly, these methods are now venturing into [video generation](https://imagen.research.google/video/).
 
@@ -425,7 +425,7 @@ $$
 \end{equation*}
 $$
 
-This can be a useful way to construct move expressive flow!
+This can be a useful way to construct move expressive flows!
 The model's log-likelihood is then given by summing each flow's contribution
 
 $$
@@ -529,7 +529,7 @@ Feeding this (joint) vector field to an adaptive step-size ODE solver allows us 
 
 One may legitimately wonder why should we bother with such *time-continuous* flows versus *discrete* residual flows. There are a couple of benefits:
 1. CNFs can be seen as an automatic way of choosing the number of residual flows $K$ to use, which would otherwise be a hyperparameter we would have to tune. In the time-continuous setting, we can choose an error threshold $\epsilon$ and the adapative solver would give us a the discretisation step size $\delta$, effectively yielding $K = 1/\delta$ steps. Using an explicit first order solver, each step is of the form $x \leftarrow x + \delta \ u_\theta(t_k, x)$, akin to a residual flow, where the residual connection parameters $\theta$ are *shared* for each discretisation step, since $u_\theta$ is amortised over $t$, instead of having a different $\theta_k$ for each layer.
-2. In residual flows, during training we need to ensure that $u_\theta$ is $1 / \delta$ Lipschitz; otherwise the resulting flow will not be invertible and thus not a valid normalising flow. With CNFs, we still require the vector field $u_\theta(t, x)$ to be Lipschitz in $x$, _but_ we don't have to worry about exactly what this Lipschitz constant is, which is obviously much easier to satisfy and enforce in. the neural architecture.
+2. In residual flows, during training we need to ensure that $u_\theta$ is $1 / \delta$ Lipschitz; otherwise the resulting flow will not be invertible and thus not a valid normalising flow. With CNFs, we still require the vector field $u_\theta(t, x)$ to be Lipschitz in $x$, _but_ we don't have to worry about exactly what this Lipschitz constant is, which is obviously much easier to satisfy and enforce in the neural architecture.
 <!-- , as an adaptive ODE solver will automatically choose a suitable step size $\delta$ for us. -->
 
 <!-- > [name=Tor] Regarding "residual connection parameters $\theta$ are *shared* for each discretisation step", there is nothing stopping us from having the paameters depend on $t$ in a way that recovers the behavior we would see in a discrete case, no? -->
@@ -681,7 +681,7 @@ This involves integrating the time-evolution of samples $x_t$ and log-likelihood
 - ⚠️ Expensive numerical ODE simulations at training time!
 - ⚠️ Estimators for the divergence to scale nicely with high dimension. [^hutchinson]
 
-CNFs are very expressive as they parametrise a large class of flows, and therefore of probability distribution. Yet training can be *extremely* slow due to the ODE integration at each iteration. One may wonder whether a 'simulation-free', i.e. *not* requiring any integration, training procedure exists for training these CNFs.
+CNFs are very expressive as they parametrise a large class of flows, and therefore of probability distributions. Yet training can be *extremely* slow due to the ODE integration at each iteration. One may wonder whether a 'simulation-free', i.e. *not* requiring any integration, training procedure exists for training these CNFs.
 
 <!-- > [name=Tor] Should add a citation for the "large class of flows" claim. -->
 
@@ -724,7 +724,7 @@ In words: we're just performing regression on $u_t(x)$ for all $t \in [0, 1]$.
 
 Of course, this requires knowledge of a *valid* $u(t, x)$, and if we already have access to $u_t$, there's no point in learning an approximation $u_{\theta}(t, x)$ in the first place! But as we will see in the next section, we can leverage this formulation to construct a useful target for $u_{\theta}(t, x)$ witout having to compute explicitly $u(t, x)$.
 
-This is where *Conditional* Flow Matching (CMF) comes to the rescue.
+This is where *Conditional* Flow Matching (CFM) comes to the rescue.
 
 <details markdown="1" class="my-info my-box" open="true">
 <summary>
@@ -832,7 +832,7 @@ $p_t(x_t) = \int p(z) ~p_{t\mid z}(x_t\mid z) \textrm{d}z$.
 The $p_{t\mid z}(x_t\mid z)$ term being a **conditional probability path**, satisfying some boundary conditions at $t=0$ and $t=1$ so that $p_t$ be a valid path interpolating between $q_0$ and $q_1$.
 In addition, as opposed to the marginal $p_t$ , the conditional $p_{t\mid1}$ could be available in closed-form.
 
-In particular, as we have access to data samples $x_1 \sim q_1$, it sounds pretty reasonable to condition on $z=x_1$, leading to the following marignal probabilithy path
+In particular, as we have access to data samples $x_1 \sim q_1$, it sounds pretty reasonable to condition on $z=x_1$, leading to the following marginal probabilithy path
 
 $$
 \begin{equation*}
@@ -843,7 +843,7 @@ $$
 
 
 <!-- would interpolate between $p_{t=0} = q_0$ and $p_{t=1}=\delta_{x_1}$.  -->
-In this setting, the conditional probability path $p_{t\mid 1}$ need to satisfy the boundary conditions
+In this setting, the conditional probability path $p_{t\mid 1}$ needs to satisfy the boundary conditions
 
 $$
 \begin{equation*}
@@ -898,7 +898,7 @@ $$
 
 <!-- That is, we have an unbiased estimator the marginal vector field $u_t$ that we want to learn by sampling $x_1$ from $p_{1 \mid t}(x_1 \mid x)$ and evaluating $u_t(x \mid x_1)$. -->
 
-To see why this $u_t$ the same the vector field as the one defined earlier, i.e. the one generating the (marginal) pribability path $p_t$, we need to show that the expression above for the marginal vector field $u_t(x)$ satisfies the transport equation
+To see why this $u_t$ the same the vector field as the one defined earlier, i.e. the one generating the (marginal) probability path $p_t$, we need to show that the expression above for the marginal vector field $u_t(x)$ satisfies the transport equation
 
 $$
 \begin{equation*}
@@ -1122,9 +1122,9 @@ $$
 $$
 
 which implies that we can use $${\mathcal{L}}_{\text{CFM}}$$ instead to train the parametric vector field $u_{\theta}$.
-The defer the full proof to the footnote[^CFM], but show the key idea below.
+We defer the full proof to the footnote[^CFM], but show the key idea below.
 By developing the squared norm in both losses, we can easily show that the squared terms are equal or independent of $\theta$.
-Let's develop inner product term for $${\mathcal{L}}_{\text{FM}}$$ and show that it is equal to the inner product of $${\mathcal{L}}_{\text{CFM}}$$:
+Let's develop the inner product term for $${\mathcal{L}}_{\text{FM}}$$ and show that it is equal to the inner product of $${\mathcal{L}}_{\text{CFM}}$$:
 
 $$
 \begin{align}
@@ -1140,7 +1140,7 @@ where in the $\hltwo{\text{first highlighted step}}$ we used the expression of $
 
 <!-- > [name=emilem] The following paragraph is key, perhaps it can be improved? -->
 
-The benefit of the CFM loss being that once we define the conditional probability path $p_t(x \mid x_1)$, we can construct an unbiased Monte Carlo estimator of the objective using samples $\big( x_1^{(i)} \big)_{i = 1}^n$ from the data target $q_1$! 
+The benefit of the CFM loss is that once we define the conditional probability path $p_t(x \mid x_1)$, we can construct an unbiased Monte Carlo estimator of the objective using samples $\big( x_1^{(i)} \big)_{i = 1}^n$ from the data target $q_1$! 
 
 This estimator can be efficiently computed as it involves an expectation over the joint $q_1(x_1)p_t(x \mid x_1)$ 
 , of the conditional vector field $u_t (x \mid x_1)$ both being available as opposed to the marginal vector field $u_t$ which involves an expectation over the posterior $p_{1 \mid t}(x_1 \mid x)$.
@@ -1413,7 +1413,7 @@ Does not guarantee that the _marginal_ vector field is the OT map!
 
 <!-- > [name=emilem] Perhaps this is a bit dramatic as FM already works well witout mini batch OT? -->
 
-Unfortunately not, no. There are two issues arising from *crossing conditional paths*. We will explain this just after, but now we stress that this lead to
+Unfortunately not, no. There are two issues arising from *crossing conditional paths*. We will explain this just after, but now we stress that this leads to
 1. Non-straight marginal paths $\Rightarrow$ ODE hard to integrate $\Rightarrow$ slow sampling at inference.
 2. Many possible $x_1$ for a noised $x_t$ $\Rightarrow$ high CFM loss variance $\Rightarrow$ slow training convergence.
 
@@ -1623,7 +1623,7 @@ Figure: *Independent coupling $q(x_0, x_1) = q(x_0)q(x_1)$.*
 
 ### Coupling
 
-So far we have constructed the vector field $u_t$ by conditioning and marginalising over data points $x_1$. This is referred as a *one-sided conditioning*, where the probability path is constructed by marginalising over $z=x_1$:
+So far we have constructed the vector field $u_t$ by conditioning and marginalising over data points $x_1$. This is referred to as a *one-sided conditioning*, where the probability path is constructed by marginalising over $z=x_1$:
 
 $$
 p_t(x_t) = \int p_t(x_t \mid z) q(z) \dd{z} = \int p_t(x_t \mid x_1) q(x_1) \dd{x_1}
@@ -1669,7 +1669,7 @@ The following boundary condition on $p_t(x_t \mid x_1, x_0)$: $p_0(\cdot \mid x_
 
 </div>
 
-For instance, a deterministic linear interpolation gives $p(x_t \mid x_0, x_1) = \delta_{(1-t)} x_0 + t x_1(x_t)$ and the simplest choice regarding the coupling $z = (x_1, x_0)$ is the consider independent samples: $q(x_1, x_0) = q_1(x_1) q_0(x_0)$.
+For instance, a deterministic linear interpolation gives $p(x_t \mid x_0, x_1) = \delta_{(1-t)} x_0 + t x_1(x_t)$ and the simplest choice regarding the coupling $z = (x_1, x_0)$ is to consider independent samples: $q(x_1, x_0) = q_1(x_1) q_0(x_0)$.
 
 <div markdown="1" class="my-center">
 <div>
@@ -1688,7 +1688,7 @@ For instance, a deterministic linear interpolation gives $p(x_t \mid x_0, x_1) =
 </div>
 
 
-One main advantage being that this allows for non Gaussian reference distribution $q_0$.
+One main advantage is that this allows for non Gaussian reference distribution $q_0$.
 Choosing a standard normal as noise distribution $q(x_0) = \mathcal{N}(0, \mathrm{I})$ we recover the same _one-sided_ conditional probability path as earlier: 
 
 $$
@@ -1874,12 +1874,12 @@ It's worth noting that in \eqref{eq:ot} we only considered choosing the coupling
 In short, we've shown that flow matching is an efficient approach to training continuous normalising flows (CNFs), by directly regressing over the vector field instead of explicitly training by maximum likelihood.
 This is enabled by constructing the target vector field as the marginalisation of simple conditional vector fields which (marginally) interpolate between the reference and data distribution, but crucially for which we can evaluate and integrate over time.
 A neural network parameterising the vector field can then be trained by regressing over these conditional vector fields.
-Similarly to CNFs, sampled can be obtained at inference time by solving the ODE associated with the neural vector field.
+Similarly to CNFs, samples can be obtained at inference time by solving the ODE associated with the neural vector field.
 
 <!-- which bridge between a noise refence distribution and a target data distribution, and as such constructs a generative model. -->
 
 In this post we have not talked about diffusion (i.e. score based) models on purpose as they are not necessary for understanding flow matching.
-Yet these are deeply related and even exactly the same in some setting.
+Yet these are deeply related and even exactly the same in some settings.
 We are planning to explore these connections, along with generalisations in a follow-up post!
 
 # Citation 
