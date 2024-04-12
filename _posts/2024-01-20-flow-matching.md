@@ -1899,7 +1899,7 @@ Please cite us as:
  
 # Acknowledgments
 
-We deeply thank Michael Albergo, Valentin Debortoli and James Thornton for giving insightful feedback!
+We deeply thank Michael Albergo, Valentin Debortoli and James Thornton for giving insightful feedback! And thank you to Andrew Foong for pointing out several typos and rendering issues!
 
 # References
 
