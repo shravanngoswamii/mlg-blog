@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="What does it mean to combine variational inference with natural gradients? Can this scale to neural networks? What kind of approximations do we need to make?...">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="/blog/assets/images/cbl.png">
+
+    <title>Natural-Gradient Variational Inference 1: The Maths · Cambridge MLG Blog</title>
+
+    <link rel="stylesheet" href="/blog/assets/css/normalize.css">
+    <link rel="stylesheet" href="/blog/assets/css/h5bp.css">
+    <link rel="stylesheet" href="/blog/assets/css/solarized-light.css">
+    <link rel="stylesheet" href="/blog/assets/css/style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anaheim">
+
+    <!-- Preload icons from Icons8. -->
+<script type="text/javascript">
+    (new Image()).src = "/blog/assets/images/icons8-github-blue.png";
+    (new Image()).src = "/blog/assets/images/icons8-github-white.png";
+    (new Image()).src = "/blog/assets/images/icons8-link-blue.png";
+    (new Image()).src = "/blog/assets/images/icons8-link-grey.png";
+    (new Image()).src = "/blog/assets/images/icons8-ok.png";
+    (new Image()).src = "/blog/assets/images/icons8-rss-blue.png";
+    (new Image()).src = "/blog/assets/images/icons8-rss-dark.png";
+    (new Image()).src = "/blog/assets/images/icons8-rss-white.png";
+    (new Image()).src = "/blog/assets/images/icons8-twitter-blue.png";
+    (new Image()).src = "/blog/assets/images/icons8-twitter-white.png";
+</script>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+    <script type="text/javascript" src="/blog/assets/links.js"></script>
+    
+
+    <script type="text/javascript">
+        page_url = "https://mlg.eng.cam.ac.uk/2021/04/13/ngvi-bnns-part-1.html"
+    </script>
+
+    <script type="text/javascript">
+    window.MathJax = {
+        tex: {
+            inlineMath: [['$', '$'], ['$$', '$$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']],
+            packages: {'[+]': ['ams', 'newcommand']},
+            tags: 'all',
+            macros: {
+                Normal: '\\mathcal{N}',
+                R: '\\mathbb{R}',
+                E: '\\mathbb{E}',
+                C: '\\mathbb{C}',
+                sd: '\\text{d}',
+                pd: '\\partial',
+                cond: '\\,|\\,',
+                ll: '\\left\\langle',
+                rr: '\\right\\rangle',
+                fp: '\\operatorname{fp}',
+                argmax: '\\operatorname{arg\\,max}',
+                argmin: '\\operatorname{arg\\,min}',
+                e: '\\varepsilon',
+                code: ['{\\small \\texttt{#1}}', 1],
+                parens: ['\\left( #1 \\right)', 1]
+            }
+        }
+    };
+</script>
+<script type="text/javascript" id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+</script>
+</head>
+
+    <body>
+        <!-- This input is here to make copying to clipboard work on iOS. -->
+        <input type="text" id="selection-dummy" style="display: none;" contenteditable="true" readonly="false">
+
+        <div id="wrapper">
+            <nav class="mlg-navbar">
+                <style>
+                    .mlg-navbar {
+                        font-family: 'Anaheim', sans-serif;
+                        background-color: #eeeeee;
+                        padding: 13.5px;
+                    }
+
+                    .mlg-navbar a {
+                        text-decoration: none;
+                    }
+
+                    .mlg-navbar-container {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        max-width: 1500px;
+                        margin: 0 auto;
+                    }
+
+                    .mlg-navbar-brand {
+                        display: flex;
+                        align-items: center;
+                        margin-left: 12px;
+                    }
+
+                    .mlg-navbar-logo {
+                        height: 1.5rem;
+                        margin-right: 8px;
+                    }
+
+                    .mlg-navbar-title {
+                        color: #333;
+                        font-size: 21.26px;
+                    }
+
+                    @media screen and (min-width: 1246px) {
+                        .mlg-title-hide-desktop {
+                            display: none;
+                        }
+                    }
+
+                    @media screen and (max-width: 1246px) {
+                        .mlg-title-hide-mobile {
+                            display: none;
+                        }
+                    }
+
+                    .mlg-navbar-nav {
+                        display: flex;
+                        list-style-type: none;
+                        margin: 0;
+                        padding: 0;
+                    }
+
+                    .mlg-nav-item {
+                        margin-left: 24px;
+                    }
+
+                    .mlg-nav-link {
+                        text-decoration: none;
+                        color: #333;
+                        font-size: 16px;
+                    }
+
+                    .mlg-nav-link:hover {
+                        color: #193d8f;
+                    }
+
+                    .mlg-navbar-toggler-icon {
+                        display: none;
+                        width: 30px;
+                        height: 30px;
+                        background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'><path stroke='%233b4248' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/></svg>");
+                        background-size: contain;
+                        cursor: pointer;
+                    }
+
+                    @media (max-width: 768px) {
+                        .mlg-navbar-container {
+                            flex-wrap: wrap;
+                            justify-content: flex-start;
+                        }
+
+                        .mlg-navbar-toggler-icon {
+                            display: block;
+                            margin-left: 15px;
+                        }
+
+                        .mlg-navbar-nav {
+                            flex-direction: column;
+                            width: 100%;
+                            display: none;
+                            margin-top: 10px;
+                        }
+
+                        .mlg-nav-item {
+                            line-height: 25.5px;
+                            margin: 9px 18px;
+                        }
+
+                        .mlg-navbar-nav.mlg-active {
+                            display: flex;
+                        }
+                    }
+                    footer {
+                        position: absolute;
+                        max-width: 100% !important;
+                        background-color: #e3e1e1;
+                        color: #3b4248;
+                        padding-bottom: 20px;
+                        padding-top: 5px;
+                        text-align: center !important;
+                        font-size: 14px;
+                        line-height: 1;
+                        z-index: 1020;
+                        height: fit-content;
+                    }
+
+                    footer a {
+                        color: #193d8f;
+                        text-decoration: none;
+                    }
+
+                    footer a:hover {
+                        text-decoration: underline;
+                    }
+                    
+                    @media(max-width: 767.98px) {
+                        .nav-footer-center {
+                            margin-top: 0 !important;
+                        }
+                    }
+                </style>
+                <div class="mlg-navbar-container">
+                    <span class="mlg-navbar-toggler-icon"></span>
+                    <a href="https://mlg.eng.cam.ac.uk/" class="mlg-navbar-brand">
+                        <img src="https://mlg.eng.cam.ac.uk/preview/assets/logo/logo.png" alt="Cambridge Logo" class="mlg-navbar-logo">
+                        <span class='mlg-title-hide-mobile mlg-navbar-title'>Machine Learning Group, Department of Engineering, Cambridge</span>
+                        <span class='mlg-title-hide-desktop mlg-navbar-title'>MLG Cambridge</span>
+                    </a>
+                    <ul class="mlg-navbar-nav">
+                        <li class="mlg-nav-item"><a class="mlg-nav-link" href="https://mlg.eng.cam.ac.uk/about.html">About Us</a></li>
+                        <li class="mlg-nav-item"><a class="mlg-nav-link" href="https://mlg.eng.cam.ac.uk/news/">News</a></li>
+                        <li class="mlg-nav-item"><a class="mlg-nav-link" href="https://mlg.eng.cam.ac.uk/research/">Research</a></li>
+                        <li class="mlg-nav-item"><a class="mlg-nav-link" href="https://mlg.eng.cam.ac.uk/publications/">Publications</a></li>
+                        <li class="mlg-nav-item"><a class="mlg-nav-link" href="https://mlg.eng.cam.ac.uk/people/">People</a></li>
+                        <li class="mlg-nav-item"><a class="mlg-nav-link" href="https://mlg.eng.cam.ac.uk/phd_programme_in_advanced_machine_learning.html">PhD Admissions</a></li>
+                        <li class="mlg-nav-item"><a class="mlg-nav-link" href="https://mlg.eng.cam.ac.uk/blog">Blog</a></li>
+                    </ul>
+                </div>
+                <script>
+                    document.querySelector('.mlg-navbar-toggler-icon').addEventListener('click', function () {
+                        document.querySelector('.mlg-navbar-nav').classList.toggle('mlg-active');
+                    });
+                </script>
+            </nav>
+
+            <!-- Header and menu -->
+            <header>
+                <div class="shaded">
+                    <div class="centered">
+<!--                         <div id="header-logo">
+                            <img src="/blog/assets/images/cbl.png" alt="CBL">
+                        </div> -->
+<!--                         <a href="/" id="header-title">Cambridge MLG</a> -->
+                        <nav id="menu">
+<!--                             <a href="/blog/">Blog</a> -->
+                            <a href="/blog/posts-by-tag">tags</a>
+                        </nav>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main content -->
+            <div class="centered">
+                <main>
+                    <article>
+    <img src="/blog/assets/images/ngvi-bnns/representative-image.png" class="representative-image" alt="Representative image">
+        <p class="representative-image-attribution">
+                <a href="https://arxiv.org/pdf/1807.04489.pdf">Image by Khan & Nielsen (2018).</a>
+            </p>
+    <h1> Natural-Gradient Variational Inference 1: The Maths </h1>
+    <p class="tags">
+        
+        
+            <a href="/blog/posts-by-tag#mathematics" class="tag">mathematics</a>
+        
+            <a href="/blog/posts-by-tag#theory" class="tag">theory</a>
+        
+    </p>
+
+    By <a href="https://siddharthswaroop.github.io/">Siddharth Swaroop</a>
+
+    <p>Bayesian Deep Learning hopes to tackle neural networks’ poorly-calibrated uncertainties by injecting some level of Bayesian thinking.
+There has been mixed success: progress is difficult as scaling Bayesian methods to such huge models is difficult!
+One promising direction of research is based on natural-gradient variational inference.
+We shall motivate and derive such algorithms, and then analyse their performance at a large scale, such as on ImageNet.</p>
+
+<p>This is the first part of a two-part blog.
+This first part will involve quite a lot of detailed maths: we will derive a natural-gradient variational inference (NGVI) algorithm that can run on neural networks (NNs).
+We will follow the appendices in <a href="https://arxiv.org/pdf/1806.04854.pdf">Khan et al. (2018)</a>.
+NGVI algorithms are in contrast to stochastic gradient algorithms such as Bayes-By-Backprop (<a href="https://arxiv.org/pdf/1505.05424.pdf">Blundell et al., 2015</a>), which also optimises the same Bayesian VI objective function, and also in contrast to Adam and SGD, which optimise for a non-Bayesian estimate of neural network weights.</p>
+
+<p>In the <a href="https://mlg-blog.com/2021/11/24/ngvi-bnns-part-2.html">second part of the blog</a>, we will work our way to large datasets/architectures such as ImageNet/ResNets, discussing additional approximations required, as well as analysing their promising results. The second part will closely follow a paper I was involved in, <a href="https://arxiv.org/pdf/1906.02506.pdf">Osawa et al. (2019)</a>.</p>
+
+<p>I hope to leave the reader with an understanding of how NGVI algorithms for NNs are derived, and some intuition for their strengths and weaknesses.
+I will <strong>not</strong> discuss other Bayesian neural network algorithms, nor get involved in the recent debates over what it means to be ‘Bayesian’ in deep learning!
+$\newcommand{\vparam}{\boldsymbol{\theta}}$
+$\newcommand{\veta}{\boldsymbol{\eta}}$
+$\newcommand{\vphi}{\boldsymbol{\phi}}$
+$\newcommand{\vmu}{\boldsymbol{\mu}}$
+$\newcommand{\vSigma}{\boldsymbol{\Sigma}}$
+$\newcommand{\vm}{\mathbf{m}}$
+$\newcommand{\vF}{\mathbf{F}}$
+$\newcommand{\vI}{\mathbf{I}}$
+$\newcommand{\vg}{\mathbf{g}}$
+$\newcommand{\vH}{\mathbf{H}}$
+$\newcommand{\vs}{\mathbf{s}}$
+$\newcommand{\myexpect}{\mathbb{E}}$
+$\newcommand{\pipe}{\,|\,}$
+$\newcommand{\data}{\mathcal{D}}$
+$\newcommand{\loss}{\mathcal{L}}$
+$\newcommand{\gauss}{\mathcal{N}}$</p>
+
+<h2 id="why-natural-gradient-variational-inference">Why natural-gradient variational inference?</h2>
+
+<p>If you are reading this blog, hopefully you already know about Bayesian inference and its many promises when combined with deep learning: in short, we hope to obtain reliable confidence estimates, avoid overfitting on small datasets, and deal naturally with sequential learning.
+But exact Bayesian inference on large models such as neural networks is intractable.</p>
+
+<p>Although there are many approximate Bayesian inference algorithms, we will only focus on variational inference. <a href="https://arxiv.org/pdf/1505.05424.pdf">Blundell et al. (2015)</a> introduced Bayes-By-Backprop for training NNs with VI. But this has been very difficult to scale to large NNs such as ResNets: the main problem is that optimisation is restrictively slow as it requires many passes through the data.</p>
+
+<p>Separately, natural-gradient update steps were introduced as a principled way of incorporating the information geometry of the distribution being optimised (<a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.452.7280&amp;rep=rep1&amp;type=pdf">Amari, 1998</a>).
+By incorporating the geometry of the distribution, we expect to take gradient steps in much better directions.
+This should speed up gradient optimisation significantly.
+For a more detailed explanation, please look at the motivation in papers such as <a href="https://arxiv.org/pdf/1807.04489.pdf">Khan &amp; Nielsen (2018)</a> or <a href="https://jmlr.org/papers/volume21/17-678/17-678.pdf">Martens (2020)</a>; I found figures such as Figure 1(a) from <a href="https://arxiv.org/pdf/1807.04489.pdf">Khan &amp; Nielsen (2018)</a> particularly useful.</p>
+
+<p>It therefore makes sense to try and apply natural-gradient updates to VI for NNs, where speed of convergence has been an issue.
+In this blog post, we do this while looking closely at the mathematical details.
+We will follow the appendices in <a href="https://arxiv.org/pdf/1806.04854.pdf">Khan et al. (2018)</a> (there is a slightly different derivation in <a href="https://arxiv.org/pdf/1712.02390.pdf">Zhang et al. (2018)</a>).
+I also hope that, after reading this blog, you will be able to confidently approach recent papers that use NGVI, papers which often assume some knowledge of how NGVI algorithms are derived.</p>
+
+<h2 id="starting-with-the-basics">Starting with the basics</h2>
+
+<p>This section is a very brief overview of some fundamental concepts we will need.
+If you understand Equations \eqref{eq:exp_fam}, \eqref{eq:ELBO}, \eqref{eq:simple_NGD} &amp; \eqref{eq:NGD}, then feel free to skip the text. If anything is unfamiliar, there will be links to some good references.</p>
+
+<h3 id="exponential-families">Exponential Families</h3>
+
+<p>Exponential family distributions are commonly used in machine learning, with some key properties we can use. They include Gaussian distributions, which is the specific case we will consider later. Exponential family distributions are covered in most machine learning courses, and there are many good references, such as <a href="https://probml.github.io/pml-book/book1.html">Murphy (2021)</a> and <a href="https://www.microsoft.com/en-us/research/uploads/prod/2006/01/Bishop-Pattern-Recognition-and-Machine-Learning-2006.pdf">Bishop (2006)</a>.</p>
+
+<p>An exponential family distribution over parameters $\vparam$ with natural parameters $\veta$ has the form,</p>
+
+<p>\begin{align} \label{eq:exp_fam}
+   q(\vparam|\veta) = q_{\veta}(\vparam) = h(\vparam)\exp [ \langle\veta,\vphi(\vparam)\rangle - A(\veta) ],
+\end{align}</p>
+
+<p>where $\vphi(\vparam)$ is the vector of sufficient statistics, $\langle \cdot,\cdot \rangle$ is an inner product, $A(\veta)$ is the log-partition function and $h(\vparam)$ is a scaling constant. We also assume a <em>minimal</em> exponential family, when the sufficient statistics are linearly independent. This means that there is a one-to-one mapping between $\veta$ and the mean parameters $\vm = \myexpect_{q_\veta(\vparam)} [\vphi(\vparam)]$, and that $\vm = \nabla_\veta A(\veta)$.</p>
+
+<h3 id="variational-inference-vi">Variational inference (VI)</h3>
+
+<p>In Bayesian inference, we want to learn the posterior distribution over parameters after observing some data $\data$. The posterior is given as,</p>
+
+<p>\begin{equation}
+   p(\vparam \cond \data) = \frac{ {\color{purple}p(\data\cond\vparam)} {\color{blue}p_0(\vparam)}}{p(\data)}, \nonumber
+\end{equation}</p>
+
+<p>where ${\color{purple}p(\data\pipe \vparam)}$ is the data likelihood and ${\color{blue}p_0(\vparam)}$ is the prior over parameters. We will use colours to keep track of terms coming from the likelihood and prior.
+Note that in supervised learning, where the dataset $\data$ consists of inputs $\mathbf{X}$ and labels $\mathbf{y}$, we should write the likelihood as ${\color{purple}p(\mathbf{y}\pipe \mathbf{X}, \vparam)}$, but we slightly abuse notation by writing ${\color{purple}p(\data\pipe \vparam)}$.</p>
+
+<p>If our likelihood and prior are set correctly, then exact Bayesian inference is optimal, but unfortunately there are problems in reality (this statement comes with many caveats! See e.g. <a href="https://mlg-blog.com/2021/03/31/what-keeps-a-bayesian-awake-at-night-part-1.html">this blog post</a> for a more detailed discussion).
+To name two problems, (i) we are usually unsure if the likelihood or prior is correct, and (ii) exact Bayesian inference is often not possible, especially in NNs. In this blog post, we only focus on approaches to problem (ii): algorithms for approximate Bayesian inference. We do not consider problem (i).</p>
+
+<p>Variational Bayesian inference approximates exact Bayesian inference by learning the parameters of a distribution $q(\vparam)$ that best approximates the true posterior distribution $p(\vparam \pipe \data)$. We do this by maximising the Evidence Lower Bound (ELBO), which is equivalent to minimising the KL divergence between the approximate distribution and the true posterior.
+By assuming that $q(\vparam)$ is an exponential family distribution $q_\veta(\vparam)$, we can write the ELBO as follows,</p>
+
+<p>\begin{equation} \label{eq:ELBO}
+   \loss_\mathrm{ELBO}(\veta) = \underbrace{\myexpect_{q_\veta(\vparam)} \left[\log {\color{purple}p(\data\pipe\vparam)}\right]}_\text{Likelihood term} + \underbrace{\myexpect_{q_\veta(\vparam)} \left[\log \frac{ {\color{blue}p_0(\vparam)}}{q_\veta(\vparam)} \right]}_\text{KL (to prior) term},
+\end{equation}</p>
+
+<p>which we optimise with respect to $\veta$. There are many good references on variational inference, such as <a href="https://arxiv.org/pdf/1601.00670.pdf">Blei et al. (2018)</a> or <a href="https://arxiv.org/pdf/1711.05597.pdf">Zhang et al. (2018)</a>.</p>
+
+<h3 id="natural-gradient-ng-updates">Natural-gradient (NG) updates</h3>
+
+<p>Let’s say that we have some function $\loss(\veta)$ that we want to optimise with respect to the parameters of an exponential family distribution $\veta$. Later in this blog post, this function will be the ELBO. Natural-gradient updates take gradient steps as follows until convergence,</p>
+
+<p>\begin{equation} \label{eq:simple_NGD}
+   \veta_{t+1} = \veta_t + \beta_t \vF(\veta_t)^{-1}\nabla_\veta \loss(\veta_t),
+\end{equation}</p>
+
+<p>where $\nabla_\veta \loss(\veta_t) = \nabla_\veta \loss(\veta) \pipe_{\veta=\veta_t}$,</p>
+
+<p>\begin{equation*}
+  \vF(\veta_t) = \myexpect_{q_\veta(\vparam)} \left[ \nabla_\veta \log q_\veta(\vparam) \nabla_\veta \log q_\veta(\vparam)^\top \right],
+\end{equation*}</p>
+
+<p>is the Fisher information matrix, and $\beta_t$ is a learning rate.
+As previously discussed, natural-gradient methods incorporate the information geometry of the distribution being optimised (through the Fisher information matrix), and therefore reduce the number of gradient steps required.
+Some good references include <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.452.7280&amp;rep=rep1&amp;type=pdf">Amari (1998)</a> and <a href="https://arxiv.org/pdf/1412.1193.pdf">Martens (2014)</a>.</p>
+
+<p>We can use a neat trick of exponential families to simplify the update step and side-step having to compute and invert the Fisher matrix directly (see e.g. <a href="http://www.columbia.edu/~jwp2128/Papers/HoffmanBleiWangPaisley2013.pdf">Hoffman et al. (2013)</a> or <a href="https://arxiv.org/pdf/1703.04265.pdf">Khan &amp; Lin (2017)</a>).
+One way to show this is to note that</p>
+
+<p>\begin{equation} \label{eq:mean-natural gradient}
+   \nabla_\veta \loss(\veta_t) = [\nabla_\veta \vm_t] \nabla_\vm \loss_*(\vm_t) = [\nabla^2_{\veta\veta}A(\veta_t)] \nabla_\vm \loss_*(\vm_t) = \vF(\veta_t) \nabla_\vm \loss_*(\vm_t),
+\end{equation}</p>
+
+<p>where $\loss_*(\vm)$ is the same function as $\loss(\veta)$ except written in terms of the mean parameters $\vm$.
+We have used the fact that $\vF(\veta) = \nabla^2_{\veta\veta}A(\veta)$, please see earlier references for this.</p>
+
+<p>Plugging this in, we get our simplified natural-gradient update step,</p>
+
+<p>\begin{equation} \label{eq:NGD}
+   \veta_{t+1} = \veta_t + \beta_t \nabla_\vm \loss_*(\vm_t).
+\end{equation}</p>
+
+<h2 id="the-details-natural-gradient-vi">The details: Natural-gradient VI</h2>
+
+<p>We wish to combine variational inference with natural-gradient updates, so let’s get straight into it: we plug the ELBO (Equation \eqref{eq:ELBO}) into the natural-gradient update (Equation \eqref{eq:NGD}). Let the prior ${\color{blue}p_0(\vparam)}$ be an exponential family with natural parameters ${\color{blue}\veta_0}$. We first note that the KL term in the ELBO can be simplified as we are dealing with exponential families,</p>
+
+<p>\begin{align}
+   \nabla_\vm \,\text{KL term}
+   &amp;= \nabla_\mathbf{m} \mathbb{E}_{q_\eta(\boldsymbol{\theta})} \left[ \boldsymbol{\phi}(\boldsymbol{\theta})^\top ({\color{blue}\veta_0} - \veta) + A(\veta) + \text{const} \right] \nonumber\newline
+   &amp;= \nabla_\mathbf{m} \left[ \mathbf{m}^\top ({\color{blue}\veta_0} - \veta) \right] + \nabla_\mathbf{m} A(\veta) \nonumber\newline
+   &amp;= {\color{blue}\veta_0} - \veta - \left[ \nabla_\mathbf{m}\veta \right]^\top \mathbf{m} + \nabla_\mathbf{m} A(\veta)  \nonumber\newline
+   &amp;= {\color{blue}\veta_0} - \veta - \mathbf{F}(\veta)^{-1}\mathbf{m} + \mathbf{F}(\veta)^{-1}\mathbf{m}  \nonumber\newline
+   &amp;= {\color{blue}\veta_0} - \veta. \nonumber
+\end{align}</p>
+
+<p>The third line follows using the product rule, and the fourth line uses $\nabla_\mathbf{m}(\cdot) = \mathbf{F}(\veta)^{-1} \nabla_\veta(\cdot)$ from Equation \eqref{eq:mean-natural gradient} and the symmetry of the Fisher information matrix.
+Plugging the ELBO (with this simplification) into Equation \eqref{eq:NGD},</p>
+
+<p>\begin{align}
+  \veta_{t+1} &amp;= \veta_t + \beta_t \left( \nabla_\vm \myexpect_{q_{\veta_t}(\vparam)} \left[\log {\color{purple}p(\data\pipe\vparam)}\right] + ({\color{blue}\veta_0} - \veta_t) \right) \nonumber\newline
+   \label{eq:BLR}
+   \therefore \veta_{t+1} &amp;= (1-\beta_t) \veta_t + \beta_t \Big({\color{blue}\veta_0} + \nabla_\vm \underbrace{\myexpect_{q_{\veta_t}(\vparam)} \left[\log {\color{purple}p(\data\pipe\vparam)}\right]}_{ {\color{purple}\Large\mathcal{F}_t}} \Big).
+\end{align}</p>
+
+<p>This equation is presented and analysed in detail in <a href="https://arxiv.org/pdf/2107.04562.pdf">Khan &amp; Rue (2021)</a>, where it is called the ‘Bayesian learning rule’.
+I recommend reading the paper if you are interested in this and related topics: they show how this equation appears in many different scenarios (beyond just the Bayesian derivation presented above), and also consider extensions beyond what we consider in this blog post. This allows them to connect to a plethora of different learning algorithms ranging from Newton’s method to Kalman filters to Adam.</p>
+
+<h3 id="gaussian-approximating-family">Gaussian approximating family</h3>
+
+<p>We now consider a Gaussian approximating family, $q_\veta(\vparam) = \gauss(\vparam; \vmu, \vSigma)$.
+We will substitute the Gaussian’s natural parameters into Equation \eqref{eq:BLR} to obtain updates for $\vmu$ and $\vSigma$.
+The minimal representation for a Gaussian family has two components to its natural parameters and mean parameters,</p>
+
+<p>\begin{align}
+   \veta^{(1)} &amp;= \vSigma^{-1}\vmu,
+   &amp; \veta^{(2)} &amp;= -\frac{1}{2}\vSigma^{-1}, \nonumber\newline
+   \vm^{(1)} &amp;= \vmu,
+   &amp; \vm^{(2)} &amp;= \vmu\vmu^\top + \vSigma. \nonumber
+\end{align}</p>
+
+<p>Let the prior be a zero-mean Gaussian, ${\color{blue}p_0(\vparam) = \gauss(\vparam; \boldsymbol{0}, \delta^{-1}\vI)}$. We can therefore write the prior natural parameters as ${\color{blue}\veta_0^{(1)} = \boldsymbol{0}, \veta_0^{(2)} = -\frac{1}{2}\delta\vI}.$</p>
+
+<p>We now simplify $\nabla_\vm {\color{purple}\mathcal{F}_t}$ to be in terms of $\vmu$ and $\vSigma$ instead of $\vm$. We can use the chain rule to do this (see e.g. <a href="http://www0.cs.ucl.ac.uk/staff/c.archambeau/publ/neco_mo09_web.pdf">Opper &amp; Archambeau (2009)</a> or Appendix B.1 in <a href="https://arxiv.org/pdf/1703.04265.pdf">Khan &amp; Lin, 2017</a>),</p>
+
+<p>\begin{align}
+   \nabla_{\vm^{(1)}}{\color{purple}\mathcal{F}_t} &amp;= \nabla_\vmu {\color{purple}\mathcal{F}_t} - 2[\nabla_\vSigma {\color{purple}\mathcal{F}_t}] \vmu, \nonumber\newline
+   \nabla_{\vm^{(2)}}{\color{purple}\mathcal{F}_t} &amp;= \nabla_\vSigma {\color{purple}\mathcal{F}_t}. \nonumber
+\end{align}</p>
+
+<p>We would like to write out the natural-gradient updates (Equation \eqref{eq:BLR}) for the parameters of a Gaussian, with the resulting equations in terms of the prior natural parameters ${\color{blue}\veta_0}$ and the data ${\color{purple}\mathcal{F}_t}$.
+So let’s substitute the above derivations into Equation \eqref{eq:BLR}. We start with the second element, $\veta^{(2)}$, giving us an update for $\vSigma^{-1}$,</p>
+
+<p>\begin{equation} \label{eq:Gaussian_Sigma}
+   \vSigma_{t+1}^{-1} = (1-\beta_t)\vSigma_t^{-1} + \beta_t ({\color{blue}\delta\vI} - 2\nabla_\vSigma {\color{purple}\mathcal{F}_t}).
+\end{equation}</p>
+
+<p>We also obtain an update for the mean $\vmu$ by looking at the first element $\veta^{(1)}$,</p>
+
+<p>\begin{align}
+   \vSigma_{t+1}^{-1} \vmu_{t+1} &amp;= (1-\beta_t)\vSigma_{t}^{-1} \vmu_{t} + \beta_t ({\color{blue}\boldsymbol{0}} + \nabla_\vmu {\color{purple}\mathcal{F}_t} - 2 [\nabla_\vSigma {\color{purple}\mathcal{F}_t}] \vmu_t) \nonumber\newline
+   &amp;= \underbrace{\left[ (1-\beta_t)\vSigma_t^{-1} + \beta_t ({\color{blue}\delta\vI} - 2\nabla_\vSigma {\color{purple}\mathcal{F}_t}) \right]}_{=\vSigma_{t+1}^{-1}\text{, by Equation \eqref{eq:Gaussian_Sigma}}} \vmu_t + \beta_t (\nabla_\vmu {\color{purple}\mathcal{F}_t} - {\color{blue}\delta} \vmu_t) \nonumber\newline
+   \label{eq:Gaussian_mu}
+   \therefore \vmu_{t+1} &amp;= \vmu_t + \beta_t \vSigma_{t+1} (\nabla_\vmu {\color{purple}\mathcal{F}_t} - {\color{blue}\delta} \vmu_t).
+\end{align}</p>
+
+<p>The update for the precision $\vSigma^{-1}$ (Equation \eqref{eq:Gaussian_Sigma}) is a moving average update, and the precision slowly gets closer to and tracks $({\color{blue}\delta\vI} - 2\nabla_\vSigma {\color{purple}\mathcal{F}_t})$.
+The update for the mean $\vmu$ (Equation \eqref{eq:Gaussian_mu}) is very similar to an update for a (stochastic) gradient update for the mean. A key difference is the additional $\vSigma_{t+1}$ term, which (loosely speaking!) is the ‘natural-gradient’ part of the update: it automatically determines the learning rate for different elements of the mean $\vmu$.
+In the second part of the blog post, we will see how this relates to other algorithms such as Adam, which also try and automatically determine learning rates using data.</p>
+
+<h3 id="variational-online-newton-algorithm-von">Variational Online-Newton algorithm (VON)</h3>
+
+<p>We are now very close to a complete NGVI algorithm.
+We just need to deal with the $\nabla_\vmu {\color{purple}\mathcal{F}_t}$ and $\nabla_\vSigma {\color{purple}\mathcal{F}_t}$ terms.
+Fortunately, we can express these in terms of the gradient and Hessian of the negative log-likelihood by invoking Bonnet’s and Price’s theorems (<a href="http://www0.cs.ucl.ac.uk/staff/c.archambeau/publ/neco_mo09_web.pdf">Opper &amp; Archambeau, 2009</a>; <a href="https://arxiv.org/pdf/1401.4082.pdf">Rezende et al., 2014</a>):</p>
+
+<p>\begin{align}
+   \label{eq:bonnet_gradient}
+   \nabla_\vmu {\color{purple}\mathcal{F}_t} &amp;= \nabla_\vmu \myexpect_{q_{\veta_t}(\vparam)} \left[\log {\color{purple}p(\data\pipe\vparam)}\right]&amp; &amp;= \myexpect_{q_{\veta_t}(\vparam)} \left[\nabla_\vparam \log {\color{purple}p(\data\pipe\vparam)}\right]&amp; &amp;= -\myexpect_{q_{\veta_t}(\vparam)} \left[N{\color{purple}\vg(\vparam)} \right], \newline
+   \label{eq:bonnet_hessian}
+   \nabla_\vSigma {\color{purple}\mathcal{F}_t} &amp;= \nabla_\vSigma \myexpect_{q_{\veta_t}(\vparam)} \left[\log {\color{purple}p(\data\pipe\vparam)}\right]&amp; &amp;= \frac{1}{2}\myexpect_{q_{\veta_t}(\vparam)} \left[\nabla^2_{\vparam\vparam} \log {\color{purple}p(\data\pipe\vparam)}\right]&amp; &amp;= -\frac{1}{2}\myexpect_{q_{\veta_t}(\vparam)} \left[N{\color{purple}\vH(\vparam)} \right],
+\end{align}</p>
+
+<p>where we have used the average per-example gradient ${\color{purple}\vg(\vparam)}$ and Hessian ${\color{purple}\vH(\vparam)}$ of the negative log-likelihood (the dataset has $N$ examples).</p>
+
+<p>One final step. Until now we have been exact in our derivations (given a VI objective and Gaussian approximating family).
+But we now need to make our first approximation to estimate Equations \eqref{eq:bonnet_gradient} and \eqref{eq:bonnet_hessian}: we use a Monte-Carlo sample $\vparam_t \sim q_{\veta_t}(\vparam) = \gauss(\vparam; \vmu_t, \vSigma_t)$ to approximate the expectation terms.
+We expect any approximation error to reduce as we increase the number of Monte-Carlo samples.</p>
+
+<p>This leads to an algorithm called Variational Online-Newton (VON) in <a href="https://arxiv.org/pdf/1806.04854.pdf">Khan et al. (2018)</a>,</p>
+
+<p>\begin{align}
+   \label{eq:VON_Sigma}
+   \hspace{1em}\vSigma_{t+1}^{-1} &amp;= (1-\beta_t)\vSigma_t^{-1} + \beta_t (N {\color{purple}\vH(\vparam_t)} + {\color{blue}\delta\vI}) \newline
+   \label{eq:VON_mu}
+   \vmu_{t+1} &amp;= \vmu_t - \beta_t \vSigma_{t+1} (N{\color{purple}\vg(\vparam_t)} + {\color{blue}\delta}\vmu_t).
+\end{align}</p>
+
+<p>We can run this algorithm on models where we can calculate the gradient and Hessian (such as by using automatic differentiation). But calculating Hessians of (non-toy) neural networks is still difficult. We therefore have to approximate the Hessian ${\color{purple}\vH(\vparam_t)}$ in some way. This is done in the algorithm VOGN.</p>
+
+<h3 id="variational-online-gauss-newton-vogn">Variational Online Gauss-Newton (VOGN)</h3>
+
+<p>The Gauss-Newton matrix (<a href="https://arxiv.org/pdf/1412.1193.pdf">Martens, 2014</a>; <a href="https://www.cs.toronto.edu/~graves/nips_2011.pdf">Graves, 2011</a>; <a href="https://nic.schraudolph.org/pubs/Schraudolph02.pdf">Schraudolph, 2002</a>) approximates the Hessian with first order information, ${\color{purple}\vH(\vparam_t)} = -\nabla^2_{\vparam\vparam} \log {\color{purple}p(\data \pipe \vparam)} \approx \frac{1}{N} \sum_{i\in\data} {\color{purple}\vg_i(\vparam_t) \vg_i(\vparam_t)^\top} $.
+It has some nice properties such as being positive semi-definite (which we require), making it a suitable choice.
+We expect it to become a better approximation to the Hessian as we train for longer.
+As we will see in the second part of this blog, it can also be calculated relatively quickly.
+Please see the references for more details on the benefits and disadvantages of using the Gauss-Newton matrix, such as how it is connected to the (empirical) Fisher Information Matrix.</p>
+
+<p>This Gauss-Newton approximation is the key approximation to go from VON to VOGN.
+But we also make some other approximations to allow for good scaling to large datasets/architectures.
+Here is a full list of changes to go from VON to VOGN with some comments:</p>
+<ol>
+  <li>Use a stochastic minibatch $\mathcal{M}_t$ of size $M$ instead of all the data at every iteration. The per-example gradients in this mini-batch are ${\color{purple}\vg_i(\vparam_t)}$ and the average gradient is ${\color{purple}\hat{\vg}(\vparam_t)} = \frac{1}{M}\sum_{i\in\mathcal{M}_t} {\color{purple}\vg_i(\vparam_t)}$.
+    <ul>
+      <li>Using stochastic minibatches is crucial to scale algorithms to large datasets, and of course is common practice.</li>
+    </ul>
+  </li>
+  <li>Re-parameterise the update equations, $\mathbf{S}_t = (\vSigma_t^{-1} - {\color{blue}\delta\vI}) / N$.
+    <ul>
+      <li>This makes the equations simpler.</li>
+    </ul>
+  </li>
+  <li>Use a mean-field approximating family instead of a full-covariance Gaussian: $\mathbf{S}_t = \text{diag} (\vs_t)$.
+    <ul>
+      <li>This drastically reduces the number of parameters and is a common approximation employed in variational Bayesian neural networks.
+But we do not have to stick to this. SLANG (<a href="https://arxiv.org/pdf/1811.04504.pdf">Mishkin et al., 2018</a>) uses a low-rank + diagonal covariance structure.
+In the second part of this blog, we will see a K-FAC approximation (<a href="https://arxiv.org/pdf/1712.02390.pdf">Zhang et al., 2018</a>).</li>
+    </ul>
+  </li>
+  <li>Use the Gauss-Newton approximation to the (diagonal) Hessian: ${\color{purple}\vH(\vparam_t)} \approx \frac{1}{M} \sum_{i\in\mathcal{M}_t} \left( {\color{purple}\vg_i(\vparam_t)}^2 \right)$.
+    <ul>
+      <li>We have calculated this on a minibatch of data, and simplified the calculation to be element-wise squaring as we are using a diagonal approximation.</li>
+    </ul>
+  </li>
+  <li>Use separate learning rates ${\alpha_t, \beta_t}$ in the update equations for ${\vmu_t, \vs_t}$.
+    <ul>
+      <li>Strictly, the two learning rates should be the same. But the learning rates do not affect the fixed points of the algorithm (although they may affect which local minimum the algorithm converges to!). By introducing another hyperparameter, we hope for quicker convergence. As we shall see in the next blog post, this additional learning rate is usually not difficult to tune.</li>
+    </ul>
+  </li>
+</ol>
+
+<p>These changes lead to our final VOGN algorithm, ready for running on neural networks,</p>
+
+<p>\begin{align}
+   \label{eq:VOGN_mu}
+   \vmu_{t+1} &amp;= \vmu_t - \alpha_t \frac{ {\color{purple}\hat{\vg}(\vparam_t)} + {\color{blue}\tilde{\delta}}\vmu_t}{\vs_{t+1} + {\color{blue}\tilde{\delta}}}, \newline
+   \label{eq:VOGN_Sigma}
+   \vs_{t+1} &amp;= (1-\beta_t)\vs_t + \beta_t \frac{1}{M} \sum_{i\in\mathcal{M}_t}\left( {\color{purple}\vg_i(\vparam_t)}^2 \right),
+\end{align}</p>
+
+<p>where ${\color{blue}\tilde{\delta}} = {\color{blue}\delta}/N$, and all operations are element-wise.</p>
+
+<p>So how does this perform in practice? We explore this in detail in the second part of the blog.
+For now, we borrow Figure 1(b) from <a href="https://arxiv.org/pdf/1807.04489.pdf">Khan &amp; Nielsen (2018)</a>, which shows how Natural-Gradient VI (VOGN) can converge much quicker than Gradient VI (implemented as Bayes-By-Backprop (<a href="https://arxiv.org/pdf/1505.05424.pdf">Blundell et al., 2015</a>)) on two relatively small datasets.</p>
+
+<div class="image-container">
+    <img src="/blog/assets/images/ngvi-bnns/comparison.png" alt="VOGN can converge quickly." id="figure-VOGNvsBBB" style="width: 100%; max-width: 700px" />
+    
+        <p class="caption">
+            Figure 1: VOGN can converge quickly.
+        </p>
+    
+</div>
+
+<h2 id="were-done">We’re done!</h2>
+
+<p>I hope you now understand NGVI for BNNs a little better. You have seen how the equations are derived, and hopefully have more of a feel for why and when they might work. There was a lot of detailed maths, but I have tried to provide some intuition and make all our approximations clear.</p>
+
+<p>In this first part, we stopped at VOGN on small neural networks. In the <a href="https://mlg-blog.com/2021/11/24/ngvi-bnns-part-2.html">second part</a>, we will compare VOGN with stochastic gradient-based algorithms such as SGD and Adam to provide some further intuition. We will take some inspiration from Adam to scale VOGN to much larger datasets/architectures, such as ImageNet/ResNets. The next blog post will be a lot less mathematical!</p>
+
+<p>If you would like to cite this blog post, you can use the following bibtex:</p>
+<blockquote>
+  <p>@misc{swaroop_2021, title={Natural-Gradient Variational Inference}, url={https://mlg-blog.com/2021/04/13/ngvi-bnns-part-1.html}, author={Swaroop, Siddharth}, year={2021}}</p>
+</blockquote>
+
+
+    
+        <nav>
+            
+                <div class="prev"><a href="/blog/2021/03/31/what-keeps-a-bayesian-awake-at-night-part-2.html">&laquo; What Keeps a Bayesian Awake At Night? Part 2: Night Time</a></div>
+            
+            
+                <div class="next"><a href="/blog/2021/04/30/reinforcement-learning-for-3d-molecular-design.html">Reinforcement Learning for 3D Molecular Design &raquo;</a></div>
+            
+        </nav>
+    
+
+    <date>
+        Published on 13 April 2021.
+        
+    </date>
+
+    
+        
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            var disqus_config = function() {
+                this.page.url = 'https://mlg.eng.cam.ac.uk/blog/2021/04/13/ngvi-bnns-part-1.html';
+                this.page.identifier = '/2021/04/13/ngvi-bnns-part-1';
+            };
+            (function() {
+                var d = document;
+                s = d.createElement('script');
+                s.src = 'https://mlg-blog.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+                $('#enable-disqus-button').css('display', 'none');
+            })()
+        </script>
+        <noscript>
+            Please enable JavaScript to view the comments powered by <a href="https://disqus.com/?ref_noscript" rel="nofollow">Disqus.</a>
+        </noscript>
+    
+</article>
+
+                </main>
+            </div>
+
+            <!-- Footer -->
+<!--             <footer>
+                <div class="centered">
+                    <p class="links">
+                        This is the blog of the
+                        <a href="https://mlg.eng.cam.ac.uk/">Cambridge Machine Learning Group</a>.
+                        Follow us on Twitter
+                            <a href="https://twitter.com/CambridgeMLG" id="twitter-button">@CambridgeMLG</a>
+                        and check out our GitHub
+                            <a href="https://github.com/cambridge-mlg/" id="github-button">cambridge-mlg</a>.
+                    </p>
+                    <p class="closing">
+                        &copy; <a href="https://mlg.eng.cam.ac.uk/">Cambridge Machine Learning Group</a>.
+                        Design by <a href="https://wesselb.github.io">wesselb.github.io</a>.
+                        Powered by <a href="https://jekyllrb.com/">Jekyll</a>.
+                        Icons by <a href="https://icons8.com">Icons8</a>.
+                        <a href="/blog/feed.xml" id="feed-button">Feed</a>.
+                    </p>
+                </div>
+            </footer> -->
+            <footer id="footer">
+                <style>#footer p{text-align: center !important;}</style>
+                <p><a href="https://mlg.eng.cam.ac.uk/">Cambridge Machine Learning Group</a>. Follow us on <span class="icon twitter-icon"></span><a href="https://twitter.com/CambridgeMLG">@CambridgeMLG</a> and check out our GitHub <span class="icon github-icon"></span><a href="https://github.com/cambridge-mlg">Cambridge-MLG</a>.</p>
+                <p>This blog is designed by <a href="https://wesselb.github.io">Wessel</a> & <a href="https://shravangoswami.com/">Shravan</a>!</p>
+                <p>Powered by <a href="https://jekyllrb.com/">Jekyll</a>. Icons by <a href="https://icons8.com">Icons8</a>. &copy; <a href="https://mlg.eng.cam.ac.uk/">Cambridge Machine Learning Group</a>.</p>
+            </footer>
+
+        </div>
+
+        
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-216EYNZ435"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-216EYNZ435');
+</script>
+
+    </body>
+</html>

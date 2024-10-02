@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="Blog of the Machine Learning Group at the University of Cambridge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="/blog/assets/images/cbl.png">
+
+    <title>Cambridge MLG Blog</title>
+
+    <link rel="stylesheet" href="/blog/assets/css/normalize.css">
+    <link rel="stylesheet" href="/blog/assets/css/h5bp.css">
+    <link rel="stylesheet" href="/blog/assets/css/solarized-light.css">
+    <link rel="stylesheet" href="/blog/assets/css/style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anaheim">
+
+    <!-- Preload icons from Icons8. -->
+<script type="text/javascript">
+    (new Image()).src = "/blog/assets/images/icons8-github-blue.png";
+    (new Image()).src = "/blog/assets/images/icons8-github-white.png";
+    (new Image()).src = "/blog/assets/images/icons8-link-blue.png";
+    (new Image()).src = "/blog/assets/images/icons8-link-grey.png";
+    (new Image()).src = "/blog/assets/images/icons8-ok.png";
+    (new Image()).src = "/blog/assets/images/icons8-rss-blue.png";
+    (new Image()).src = "/blog/assets/images/icons8-rss-dark.png";
+    (new Image()).src = "/blog/assets/images/icons8-rss-white.png";
+    (new Image()).src = "/blog/assets/images/icons8-twitter-blue.png";
+    (new Image()).src = "/blog/assets/images/icons8-twitter-white.png";
+</script>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+    <script type="text/javascript" src="/blog/assets/links.js"></script>
+    
+
+    <script type="text/javascript">
+        page_url = "https://mlg.eng.cam.ac.uk/about"
+    </script>
+
+    <script type="text/javascript">
+    window.MathJax = {
+        tex: {
+            inlineMath: [['$', '$'], ['$$', '$$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']],
+            packages: {'[+]': ['ams', 'newcommand']},
+            tags: 'all',
+            macros: {
+                Normal: '\\mathcal{N}',
+                R: '\\mathbb{R}',
+                E: '\\mathbb{E}',
+                C: '\\mathbb{C}',
+                sd: '\\text{d}',
+                pd: '\\partial',
+                cond: '\\,|\\,',
+                ll: '\\left\\langle',
+                rr: '\\right\\rangle',
+                fp: '\\operatorname{fp}',
+                argmax: '\\operatorname{arg\\,max}',
+                argmin: '\\operatorname{arg\\,min}',
+                e: '\\varepsilon',
+                code: ['{\\small \\texttt{#1}}', 1],
+                parens: ['\\left( #1 \\right)', 1]
+            }
+        }
+    };
+</script>
+<script type="text/javascript" id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+</script>
+</head>
+
+    <body>
+        <!-- This input is here to make copying to clipboard work on iOS. -->
+        <input type="text" id="selection-dummy" style="display: none;" contenteditable="true" readonly="false">
+
+        <div id="wrapper">
+            <nav class="mlg-navbar">
+                <style>
+                    .mlg-navbar {
+                        font-family: 'Anaheim', sans-serif;
+                        background-color: #eeeeee;
+                        padding: 13.5px;
+                    }
+
+                    .mlg-navbar a {
+                        text-decoration: none;
+                    }
+
+                    .mlg-navbar-container {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        max-width: 1500px;
+                        margin: 0 auto;
+                    }
+
+                    .mlg-navbar-brand {
+                        display: flex;
+                        align-items: center;
+                        margin-left: 12px;
+                    }
+
+                    .mlg-navbar-logo {
+                        height: 1.5rem;
+                        margin-right: 8px;
+                    }
+
+                    .mlg-navbar-title {
+                        color: #333;
+                        font-size: 21.26px;
+                    }
+
+                    @media screen and (min-width: 1246px) {
+                        .mlg-title-hide-desktop {
+                            display: none;
+                        }
+                    }
+
+                    @media screen and (max-width: 1246px) {
+                        .mlg-title-hide-mobile {
+                            display: none;
+                        }
+                    }
+
+                    .mlg-navbar-nav {
+                        display: flex;
+                        list-style-type: none;
+                        margin: 0;
+                        padding: 0;
+                    }
+
+                    .mlg-nav-item {
+                        margin-left: 24px;
+                    }
+
+                    .mlg-nav-link {
+                        text-decoration: none;
+                        color: #333;
+                        font-size: 16px;
+                    }
+
+                    .mlg-nav-link:hover {
+                        color: #193d8f;
+                    }
+
+                    .mlg-navbar-toggler-icon {
+                        display: none;
+                        width: 30px;
+                        height: 30px;
+                        background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'><path stroke='%233b4248' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/></svg>");
+                        background-size: contain;
+                        cursor: pointer;
+                    }
+
+                    @media (max-width: 768px) {
+                        .mlg-navbar-container {
+                            flex-wrap: wrap;
+                            justify-content: flex-start;
+                        }
+
+                        .mlg-navbar-toggler-icon {
+                            display: block;
+                            margin-left: 15px;
+                        }
+
+                        .mlg-navbar-nav {
+                            flex-direction: column;
+                            width: 100%;
+                            display: none;
+                            margin-top: 10px;
+                        }
+
+                        .mlg-nav-item {
+                            line-height: 25.5px;
+                            margin: 9px 18px;
+                        }
+
+                        .mlg-navbar-nav.mlg-active {
+                            display: flex;
+                        }
+                    }
+                    footer {
+                        position: absolute;
+                        max-width: 100% !important;
+                        background-color: #e3e1e1;
+                        color: #3b4248;
+                        padding-bottom: 20px;
+                        padding-top: 5px;
+                        text-align: center !important;
+                        font-size: 14px;
+                        line-height: 1;
+                        z-index: 1020;
+                        height: fit-content;
+                    }
+
+                    footer a {
+                        color: #193d8f;
+                        text-decoration: none;
+                    }
+
+                    footer a:hover {
+                        text-decoration: underline;
+                    }
+                    
+                    @media(max-width: 767.98px) {
+                        .nav-footer-center {
+                            margin-top: 0 !important;
+                        }
+                    }
+                </style>
+                <div class="mlg-navbar-container">
+                    <span class="mlg-navbar-toggler-icon"></span>
+                    <a href="https://mlg.eng.cam.ac.uk/" class="mlg-navbar-brand">
+                        <img src="https://mlg.eng.cam.ac.uk/preview/assets/logo/logo.png" alt="Cambridge Logo" class="mlg-navbar-logo">
+                        <span class='mlg-title-hide-mobile mlg-navbar-title'>Machine Learning Group, Department of Engineering, Cambridge</span>
+                        <span class='mlg-title-hide-desktop mlg-navbar-title'>MLG Cambridge</span>
+                    </a>
+                    <ul class="mlg-navbar-nav">
+                        <li class="mlg-nav-item"><a class="mlg-nav-link" href="https://mlg.eng.cam.ac.uk/about.html">About Us</a></li>
+                        <li class="mlg-nav-item"><a class="mlg-nav-link" href="https://mlg.eng.cam.ac.uk/news/">News</a></li>
+                        <li class="mlg-nav-item"><a class="mlg-nav-link" href="https://mlg.eng.cam.ac.uk/research/">Research</a></li>
+                        <li class="mlg-nav-item"><a class="mlg-nav-link" href="https://mlg.eng.cam.ac.uk/publications/">Publications</a></li>
+                        <li class="mlg-nav-item"><a class="mlg-nav-link" href="https://mlg.eng.cam.ac.uk/people/">People</a></li>
+                        <li class="mlg-nav-item"><a class="mlg-nav-link" href="https://mlg.eng.cam.ac.uk/phd_programme_in_advanced_machine_learning.html">PhD Admissions</a></li>
+                        <li class="mlg-nav-item"><a class="mlg-nav-link" href="https://mlg.eng.cam.ac.uk/blog">Blog</a></li>
+                    </ul>
+                </div>
+                <script>
+                    document.querySelector('.mlg-navbar-toggler-icon').addEventListener('click', function () {
+                        document.querySelector('.mlg-navbar-nav').classList.toggle('mlg-active');
+                    });
+                </script>
+            </nav>
+
+            <!-- Header and menu -->
+            <header>
+                <div class="shaded">
+                    <div class="centered">
+<!--                         <div id="header-logo">
+                            <img src="/blog/assets/images/cbl.png" alt="CBL">
+                        </div> -->
+<!--                         <a href="/" id="header-title">Cambridge MLG</a> -->
+                        <nav id="menu">
+<!--                             <a href="/blog/">Blog</a> -->
+                            <a href="/blog/posts-by-tag">tags</a>
+                        </nav>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main content -->
+            <div class="centered">
+                <main>
+                    <article>
+    <h1 id="about">About</h1>
+
+<p>We are a part of the <a href="http://learning.eng.cam.ac.uk/Public/">Computational and Biological Learning Laboratory</a> located in the <a href="http://www.eng.cam.ac.uk/">Department of Engineering</a> at the <a href="http://www.cam.ac.uk/">University of Cambridge</a>.  The research in our group is very broad, and we are interested in all aspects of machine learning.
+Particular strengths of the group are in Bayesian approaches to modelling and inference in statistical applications.
+The type of work we do can range from studying fundamental concepts in applied Bayesian statistics, all the way to getting our algorithms to perform competitively against the state-of-the-art in big-data applications.
+We also work in a broad range of application domains, including neuroscience, bioinformatics, finance, social networks, and physics, just to name a few, and we actively seek to collaborate with other groups within the Department of Engineering, throughout the university as a whole, and with other groups within the UK and around the world. 
+If you are interested in finding out more about our research, please visit our <a href="http://mlg.eng.cam.ac.uk/pub/">publications page</a>, or visit the individual research pages of our <a href="http://mlg.eng.cam.ac.uk/?page_id=381">group members</a>.</p>
+
+<p>The main website the MLG can be found <a href="http://mlg.eng.cam.ac.uk/?page_id=657">here</a>.</p>
+
+</article>
+
+                </main>
+            </div>
+
+            <!-- Footer -->
+<!--             <footer>
+                <div class="centered">
+                    <p class="links">
+                        This is the blog of the
+                        <a href="https://mlg.eng.cam.ac.uk/">Cambridge Machine Learning Group</a>.
+                        Follow us on Twitter
+                            <a href="https://twitter.com/CambridgeMLG" id="twitter-button">@CambridgeMLG</a>
+                        and check out our GitHub
+                            <a href="https://github.com/cambridge-mlg/" id="github-button">cambridge-mlg</a>.
+                    </p>
+                    <p class="closing">
+                        &copy; <a href="https://mlg.eng.cam.ac.uk/">Cambridge Machine Learning Group</a>.
+                        Design by <a href="https://wesselb.github.io">wesselb.github.io</a>.
+                        Powered by <a href="https://jekyllrb.com/">Jekyll</a>.
+                        Icons by <a href="https://icons8.com">Icons8</a>.
+                        <a href="/blog/feed.xml" id="feed-button">Feed</a>.
+                    </p>
+                </div>
+            </footer> -->
+            <footer id="footer">
+                <style>#footer p{text-align: center !important;}</style>
+                <p><a href="https://mlg.eng.cam.ac.uk/">Cambridge Machine Learning Group</a>. Follow us on <span class="icon twitter-icon"></span><a href="https://twitter.com/CambridgeMLG">@CambridgeMLG</a> and check out our GitHub <span class="icon github-icon"></span><a href="https://github.com/cambridge-mlg">Cambridge-MLG</a>.</p>
+                <p>This blog is designed by <a href="https://wesselb.github.io">Wessel</a> & <a href="https://shravangoswami.com/">Shravan</a>!</p>
+                <p>Powered by <a href="https://jekyllrb.com/">Jekyll</a>. Icons by <a href="https://icons8.com">Icons8</a>. &copy; <a href="https://mlg.eng.cam.ac.uk/">Cambridge Machine Learning Group</a>.</p>
+            </footer>
+
+        </div>
+
+        
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-216EYNZ435"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-216EYNZ435');
+</script>
+
+    </body>
+</html>

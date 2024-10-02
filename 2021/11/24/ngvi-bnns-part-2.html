@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="Having derived a natural-gradient variational inference algorithm, we now turn our attention to scaling it all the way to ImageNet. By borrowing tricks devel...">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="/blog/assets/images/cbl.png">
+
+    <title>Natural-Gradient Variational Inference 2: ImageNet-scale · Cambridge MLG Blog</title>
+
+    <link rel="stylesheet" href="/blog/assets/css/normalize.css">
+    <link rel="stylesheet" href="/blog/assets/css/h5bp.css">
+    <link rel="stylesheet" href="/blog/assets/css/solarized-light.css">
+    <link rel="stylesheet" href="/blog/assets/css/style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anaheim">
+
+    <!-- Preload icons from Icons8. -->
+<script type="text/javascript">
+    (new Image()).src = "/blog/assets/images/icons8-github-blue.png";
+    (new Image()).src = "/blog/assets/images/icons8-github-white.png";
+    (new Image()).src = "/blog/assets/images/icons8-link-blue.png";
+    (new Image()).src = "/blog/assets/images/icons8-link-grey.png";
+    (new Image()).src = "/blog/assets/images/icons8-ok.png";
+    (new Image()).src = "/blog/assets/images/icons8-rss-blue.png";
+    (new Image()).src = "/blog/assets/images/icons8-rss-dark.png";
+    (new Image()).src = "/blog/assets/images/icons8-rss-white.png";
+    (new Image()).src = "/blog/assets/images/icons8-twitter-blue.png";
+    (new Image()).src = "/blog/assets/images/icons8-twitter-white.png";
+</script>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+    <script type="text/javascript" src="/blog/assets/links.js"></script>
+    
+
+    <script type="text/javascript">
+        page_url = "https://mlg.eng.cam.ac.uk/2021/11/24/ngvi-bnns-part-2.html"
+    </script>
+
+    <script type="text/javascript">
+    window.MathJax = {
+        tex: {
+            inlineMath: [['$', '$'], ['$$', '$$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']],
+            packages: {'[+]': ['ams', 'newcommand']},
+            tags: 'all',
+            macros: {
+                Normal: '\\mathcal{N}',
+                R: '\\mathbb{R}',
+                E: '\\mathbb{E}',
+                C: '\\mathbb{C}',
+                sd: '\\text{d}',
+                pd: '\\partial',
+                cond: '\\,|\\,',
+                ll: '\\left\\langle',
+                rr: '\\right\\rangle',
+                fp: '\\operatorname{fp}',
+                argmax: '\\operatorname{arg\\,max}',
+                argmin: '\\operatorname{arg\\,min}',
+                e: '\\varepsilon',
+                code: ['{\\small \\texttt{#1}}', 1],
+                parens: ['\\left( #1 \\right)', 1]
+            }
+        }
+    };
+</script>
+<script type="text/javascript" id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+</script>
+</head>
+
+    <body>
+        <!-- This input is here to make copying to clipboard work on iOS. -->
+        <input type="text" id="selection-dummy" style="display: none;" contenteditable="true" readonly="false">
+
+        <div id="wrapper">
+            <nav class="mlg-navbar">
+                <style>
+                    .mlg-navbar {
+                        font-family: 'Anaheim', sans-serif;
+                        background-color: #eeeeee;
+                        padding: 13.5px;
+                    }
+
+                    .mlg-navbar a {
+                        text-decoration: none;
+                    }
+
+                    .mlg-navbar-container {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        max-width: 1500px;
+                        margin: 0 auto;
+                    }
+
+                    .mlg-navbar-brand {
+                        display: flex;
+                        align-items: center;
+                        margin-left: 12px;
+                    }
+
+                    .mlg-navbar-logo {
+                        height: 1.5rem;
+                        margin-right: 8px;
+                    }
+
+                    .mlg-navbar-title {
+                        color: #333;
+                        font-size: 21.26px;
+                    }
+
+                    @media screen and (min-width: 1246px) {
+                        .mlg-title-hide-desktop {
+                            display: none;
+                        }
+                    }
+
+                    @media screen and (max-width: 1246px) {
+                        .mlg-title-hide-mobile {
+                            display: none;
+                        }
+                    }
+
+                    .mlg-navbar-nav {
+                        display: flex;
+                        list-style-type: none;
+                        margin: 0;
+                        padding: 0;
+                    }
+
+                    .mlg-nav-item {
+                        margin-left: 24px;
+                    }
+
+                    .mlg-nav-link {
+                        text-decoration: none;
+                        color: #333;
+                        font-size: 16px;
+                    }
+
+                    .mlg-nav-link:hover {
+                        color: #193d8f;
+                    }
+
+                    .mlg-navbar-toggler-icon {
+                        display: none;
+                        width: 30px;
+                        height: 30px;
+                        background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'><path stroke='%233b4248' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/></svg>");
+                        background-size: contain;
+                        cursor: pointer;
+                    }
+
+                    @media (max-width: 768px) {
+                        .mlg-navbar-container {
+                            flex-wrap: wrap;
+                            justify-content: flex-start;
+                        }
+
+                        .mlg-navbar-toggler-icon {
+                            display: block;
+                            margin-left: 15px;
+                        }
+
+                        .mlg-navbar-nav {
+                            flex-direction: column;
+                            width: 100%;
+                            display: none;
+                            margin-top: 10px;
+                        }
+
+                        .mlg-nav-item {
+                            line-height: 25.5px;
+                            margin: 9px 18px;
+                        }
+
+                        .mlg-navbar-nav.mlg-active {
+                            display: flex;
+                        }
+                    }
+                    footer {
+                        position: absolute;
+                        max-width: 100% !important;
+                        background-color: #e3e1e1;
+                        color: #3b4248;
+                        padding-bottom: 20px;
+                        padding-top: 5px;
+                        text-align: center !important;
+                        font-size: 14px;
+                        line-height: 1;
+                        z-index: 1020;
+                        height: fit-content;
+                    }
+
+                    footer a {
+                        color: #193d8f;
+                        text-decoration: none;
+                    }
+
+                    footer a:hover {
+                        text-decoration: underline;
+                    }
+                    
+                    @media(max-width: 767.98px) {
+                        .nav-footer-center {
+                            margin-top: 0 !important;
+                        }
+                    }
+                </style>
+                <div class="mlg-navbar-container">
+                    <span class="mlg-navbar-toggler-icon"></span>
+                    <a href="https://mlg.eng.cam.ac.uk/" class="mlg-navbar-brand">
+                        <img src="https://mlg.eng.cam.ac.uk/preview/assets/logo/logo.png" alt="Cambridge Logo" class="mlg-navbar-logo">
+                        <span class='mlg-title-hide-mobile mlg-navbar-title'>Machine Learning Group, Department of Engineering, Cambridge</span>
+                        <span class='mlg-title-hide-desktop mlg-navbar-title'>MLG Cambridge</span>
+                    </a>
+                    <ul class="mlg-navbar-nav">
+                        <li class="mlg-nav-item"><a class="mlg-nav-link" href="https://mlg.eng.cam.ac.uk/about.html">About Us</a></li>
+                        <li class="mlg-nav-item"><a class="mlg-nav-link" href="https://mlg.eng.cam.ac.uk/news/">News</a></li>
+                        <li class="mlg-nav-item"><a class="mlg-nav-link" href="https://mlg.eng.cam.ac.uk/research/">Research</a></li>
+                        <li class="mlg-nav-item"><a class="mlg-nav-link" href="https://mlg.eng.cam.ac.uk/publications/">Publications</a></li>
+                        <li class="mlg-nav-item"><a class="mlg-nav-link" href="https://mlg.eng.cam.ac.uk/people/">People</a></li>
+                        <li class="mlg-nav-item"><a class="mlg-nav-link" href="https://mlg.eng.cam.ac.uk/phd_programme_in_advanced_machine_learning.html">PhD Admissions</a></li>
+                        <li class="mlg-nav-item"><a class="mlg-nav-link" href="https://mlg.eng.cam.ac.uk/blog">Blog</a></li>
+                    </ul>
+                </div>
+                <script>
+                    document.querySelector('.mlg-navbar-toggler-icon').addEventListener('click', function () {
+                        document.querySelector('.mlg-navbar-nav').classList.toggle('mlg-active');
+                    });
+                </script>
+            </nav>
+
+            <!-- Header and menu -->
+            <header>
+                <div class="shaded">
+                    <div class="centered">
+<!--                         <div id="header-logo">
+                            <img src="/blog/assets/images/cbl.png" alt="CBL">
+                        </div> -->
+<!--                         <a href="/" id="header-title">Cambridge MLG</a> -->
+                        <nav id="menu">
+<!--                             <a href="/blog/">Blog</a> -->
+                            <a href="/blog/posts-by-tag">tags</a>
+                        </nav>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main content -->
+            <div class="centered">
+                <main>
+                    <article>
+    <img src="/blog/assets/images/ngvi-bnns/Imagenet_short.png" class="representative-image" alt="Representative image">
+        <p class="representative-image-attribution">
+                <a href="https://arxiv.org/pdf/1906.02506.pdf">Image by Osawa et al. (2019).</a>
+            </p>
+    <h1> Natural-Gradient Variational Inference 2: ImageNet-scale </h1>
+    <p class="tags">
+        
+        
+            <a href="/blog/posts-by-tag#Bayesian+inference" class="tag">Bayesian inference</a>
+        
+            <a href="/blog/posts-by-tag#deep+learning" class="tag">deep learning</a>
+        
+    </p>
+
+    By <a href="https://siddharthswaroop.github.io/">Siddharth Swaroop</a>
+
+    <p>In our <a href="https://mlg-blog.com/2021/04/13/ngvi-bnns-part-1.html">previous post</a>, we derived a natural-gradient variational inference (NGVI) algorithm for neural networks, detailing all our approximations and providing intuition. We saw it converge faster than more naive variational inference algorithms on relatively small-scale data. But a couple of key questions remain:</p>
+
+<ol class="custom parentheses_roman">
+  <li>Can we scale such algorithms to very large datasets and architectures?</li>
+  <li>Did we gain anything from having additional Bayesian principles, or put differently, do we have better performance than SGD or Adam?</li>
+</ol>
+
+<p>We tackle these questions in this second part of the natural-gradient for variational inference series.
+We show that we can get good performance at large scales with Bayesian principles, while maintaining reasonable uncertainties.
+We start by focussing on question (i): the issue of scalability.
+We notice similarities between our NGVI algorithm and Adam, and exploit this to borrow tricks that the community has developed for Adam over many years. This allows us to scale up to very large datasets/architectures.
+We then turn our focus to question (ii): have we improved on neural networks’ poorly-calibrated uncertainties thanks to our Bayesian thinking? We will see some benefits. Along the way, we will discuss the price we pay for them.</p>
+
+<p>This second part of the blog closely follows a paper I was involved in, <a href="https://arxiv.org/pdf/1906.02506.pdf">Practical Deep Learning with Bayesian Principles (Osawa et al., 2019)</a>. There is also a <a href="https://github.com/team-approx-bayes/dl-with-bayes">codebase</a> if you are interested in experimenting with our algorithm, VOGN (Variational Online Gauss-Newton). As a postscript to this blog post, we summarise some good practices for training your own neural network with VOGN.
+$\newcommand{\vparam}{\boldsymbol{\theta}}$
+$\newcommand{\veta}{\boldsymbol{\eta}}$
+$\newcommand{\vphi}{\boldsymbol{\phi}}$
+$\newcommand{\vmu}{\boldsymbol{\mu}}$
+$\newcommand{\vSigma}{\boldsymbol{\Sigma}}$
+$\newcommand{\vm}{\mathbf{m}}$
+$\newcommand{\vF}{\mathbf{F}}$
+$\newcommand{\vI}{\mathbf{I}}$
+$\newcommand{\vg}{\mathbf{g}}$
+$\newcommand{\vH}{\mathbf{H}}$
+$\newcommand{\vs}{\mathbf{s}}$
+$\newcommand{\myexpect}{\mathbb{E}}$
+$\newcommand{\pipe}{\,|\,}$
+$\newcommand{\data}{\mathcal{D}}$
+$\newcommand{\loss}{\mathcal{L}}$
+$\newcommand{\gauss}{\mathcal{N}}$</p>
+
+<h2 id="vogn-vs-adam">VOGN vs Adam</h2>
+
+<p>We start with the equations for the VOGN algorithm, derived in our <a href="https://mlg-blog.com/2021/04/13/ngvi-bnns-part-1.html">previous blog post</a>. This also serves as a quick summary of notation: please look at the previous blog post if anything is unclear! (Colours are purely for illustrative purposes.)</p>
+
+<p>\begin{align}
+  \label{eq:VOGN_mu}
+  \vmu_{t+1} &amp;= \vmu_t - \alpha_t \frac{ {\color{purple}\hat{\vg}(\vparam_t)} + {\color{blue}\tilde{\delta}}\vmu_t}{\vs_{t+1} + {\color{blue}\tilde{\delta}}}, \newline
+  \label{eq:VOGN_Sigma}
+  \vs_{t+1} &amp;= (1-\beta_t)\vs_t + \beta_t \frac{1}{M} \sum_{i\in\mathcal{M}_t}\left( {\color{purple}\vg_i(\vparam_t)} \right)^2.
+\end{align}</p>
+
+<p>Remember, we are updating the parameters of our (mean-field Gaussian) approximate posterior $q_t(\vparam)=\gauss(\vparam; \vmu_t, \vSigma_t)$, where $\vparam$ are the parameters of a neural network. We do this by iteratively updating two vectors, $\vmu_t$ and $\vs_t$, where $t$ indexes the iteration.
+We have a zero-mean prior $p(\vparam) = \gauss(\vparam; \color{blue}\boldsymbol{0}, {\color{blue}\delta^{-1}} \vI)$, and ${\color{blue}\tilde{\delta}} = {\color{blue}{\delta}} / N$.
+Our dataset consists of $N$ data examples, and we are taking per-example gradients of the negative log-likelihood $\color{purple}\vg_i(\vparam_t)$ at a sample from our current approximate posterior, $\vparam_t \sim q_t(\vparam)$.
+For a randomly-sampled minibatch $\mathcal{M}_t$ of size $M$, we have defined the average gradient ${\color{purple}\hat{\vg}(\vparam_t)} = \frac{1}{M}\sum_{i\in\mathcal{M}_t} {\color{purple}\vg_i(\vparam_t)}$.
+There is a simple relation between $\vSigma_t$ and $\vs_t$, $\vSigma_t^{-1} = N\vs_t + {\color{blue}\delta \vI}$.
+Finally, $\alpha_t&gt;0$ and $0&lt;\beta_t&lt;1$ are learning rates, and all operations are element-wise.</p>
+
+<p>It turns out that this update equation is very similar to Adam (<a href="https://arxiv.org/pdf/1412.6980.pdf">Kingba &amp; Ba, 2015</a>). To see this, let’s write down the form that commonly-used optimisers take, such as SGD, RMSProp (<a href="https://www.cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf">Hinton, 2012</a>), and Adam:</p>
+
+<p>\begin{align}
+  \label{eq:Adam_mu}
+  \vmu_{t+1} &amp;= \vmu_t - \alpha_t \frac{ {\color{purple}\hat{\vg}(\vmu_t)} + {\color{blue}\delta}\vmu_t} {\sqrt{\vs_{t+1}} + \epsilon}, \newline
+  \label{eq:Adam_Sigma}
+  \vs_{t+1} &amp;= (1-\beta_t)\vs_t + \beta_t \left( \frac{1}{M} \sum_{i\in\mathcal{M}_t} {\color{purple}\vg_i(\vmu_t)} + {\color{blue}\delta} \vmu_t \right) ^2,
+\end{align}</p>
+
+<p>where $\delta&gt;0$ is our weight-decay regulariser, and $\epsilon&gt;0$ is a small scalar constant.
+Immediately we can see striking similarities in the overall form of the equations! Let’s take a closer look at the similarities and differences:</p>
+
+<ol>
+  <li><em>Similarity</em>: Both updates for $\vmu_t$ are similar, of the form $\vmu_{t+1} = \vmu_t - \alpha_t (\hat{\vg} + \delta \vmu_t) / \mathrm{function}{(\vs_{t+1})}$.</li>
+  <li><em>Difference</em>: The denominator in the update for the means is slightly different. VOGN uses $(\vs_{t+1} + \tilde{\delta})$, while Adam has a square root, $\sqrt{\vs_{t+1}}$.</li>
+  <li><em>Difference</em>: VOGN calculates gradients at a sample $\vparam_t \sim q_t(\vparam)$, while Adam calculates gradients just at the mean $\vmu_t$. In fact, when we remove this difference, we get a deterministic version of VOGN, which we call OGN.</li>
+  <li><em>Similarity</em>: Both updates for $\vs_t$ take the form of a moving average update.</li>
+  <li><em>Difference</em>: VOGN uses a Gauss-Newton approximation, requiring $\sum_i (\vg_i)^2$, while Adam (and other SGD-based algorithms) use a gradient-magnitude, $\left( \sum_i \vg_i \right) ^2$. Note that in VOGN, the sum is <em>outside</em> the square, while in SGD-based algorithms, the sum is <em>inside</em> the square.</li>
+</ol>
+
+<p>The Gauss-Newton approximation (Difference 5) is a better approximation to second-order information (Hessian) than the gradient-magnitude approach. This better approximation is likely why VOGN does not require a square root over $\vs_{t+1}$ in the update for the means (Difference 2). However, calculating the Gauss-Newton approximation requires additional computation in frameworks such as PyTorch, leading to VOGN being slower (per epoch) compared to Adam. 
+This is despite using speed-up tricks (<a href="https://arxiv.org/pdf/1510.01799.pdf">Goodfellow, 2015</a>).</p>
+
+<p>The similarities in the equations indicate that we might be able to take techniques people use to scale Adam up to large datasets and architectures, and apply similar ideas to scale VOGN up.
+We can use batch normalisation, momentum, clever initialisations, data augmentation, learning rate scheduling, and so on.</p>
+
+<h2 id="borrowing-existing-deep-learning-techniques">Borrowing existing deep-learning techniques</h2>
+
+<p>Let’s go over a list of each of the changes we make, providing some intuition for them. Please see <a href="https://arxiv.org/pdf/1906.02506.pdf">Osawa et al. (2019)</a> for further details. Using all these techniques, we are able to scale VOGN to datasets like CIFAR-10 and ImageNet, and architectures such as ResNets.</p>
+
+<h3 id="1-batch-normalisation-and-momentum">1. Batch normalisation and momentum</h3>
+
+<p>Batch normalisation (<a href="http://arxiv.org/pdf/1502.03167.pdf">Ioffe &amp; Szegedy, 2015</a>) empirically speeds up and stabilises training of neural networks.
+We can use BatchNorm layers as is normal in deep learning. In fact, in our VOGN implementation, we found that we do not have to maintain uncertainty over BatchNorm parameters.</p>
+
+<p>We can also use momentum for VOGN in a similar way to Adam: we introduce momentum on $\vmu_t$, along with a momentum rate.</p>
+
+<h3 id="2-initialisation">2. Initialisation</h3>
+
+<p>Over many years of training neural networks with SGD and Adam, the community has found tricks to speed up training using clever initialisation. We can get these same benefits by changing VOGN to look more like Adam at initialisation, before slowly relaxing our algorithm to become the full VOGN algorithm later in training.</p>
+
+<p>This is achieved by introducing a tempering parameter $\tau$ in front of the KL term in the ELBO, which propagates its way through to the VOGN equations. To see exactly where $\tau$ crops up, please look at Equation 4 from  <a href="https://arxiv.org/pdf/1906.02506.pdf">Osawa et al. (2019)</a>, or see <a href="#figure-VOGNalgorithm">Algorithm 1</a> below. As $\tau\rightarrow 0$, we (loosely speaking) get more similar to Adam. So, at the beginning of training, we initialise $\tau$ at something small (like $0.1$) and increase to $1$ during the first few optimisation steps.</p>
+
+<p>Other initialisations are the same as Adam: $\vmu_t$ is initialised using <code class="language-plaintext highlighter-rouge">init.xavier_normal</code> from PyTorch (<a href="https://proceedings.mlr.press/v9/glorot10a/glorot10a.pdf">Glorot &amp; Bengio, 2010</a>) and the momentum term is initialised to zero, like in Adam. VOGN’s $\vs_t$ is initialised using an additional forward pass through the first minibatch of data.</p>
+
+<h3 id="3-learning-rate-scheduling">3. Learning rate scheduling</h3>
+
+<p>We can use learning rate scheduling for $\alpha_t$ exactly like is used for Adam and SGD at a large scale. We regularly decay the learning rate by a factor (typically a factor of 10).</p>
+
+<h3 id="4-data-augmentation">4. Data augmentation</h3>
+
+<p>When training on image datasets, data augmentation (DA) can improve performance drastically. For example, we can use random cropping and/or random horizontal flipping of images.</p>
+
+<p>Unfortunately, directly applying DA to VOGN does not lead to improvements, and also negatively affects uncertainty calibration.
+But we note that DA can be viewed as increasing the effective size of our dataset: remember that our dataset size $N$ affects VOGN (as opposed to Adam and SGD, where $N$ does not appear, as it unidentifiable with the weight-decay factor). So, we view DA as increasing $N$ by some factor depending on the exact DA technique: for example, if we horizontally flip each image with a probability of 50%, we increase $N$ by a factor of 2.</p>
+
+<p>This is still a heuristic, and not mathematically rigorous. It seems to work quite well in our experiments, but requires further theoretical investigation. It is also closely related to KL-annealing in variational inference, as well as the recently-termed ‘cold posterior effect’ (<a href="https://arxiv.org/pdf/2002.02405.pdf">Wenzel et al., 2020</a>; <a href="https://arxiv.org/pdf/2011.12328.pdf">Loo et al., 2021</a>; <a href="https://arxiv.org/pdf/2008.05912.pdf">Aitchison, 2021</a>).</p>
+
+<h3 id="5-distributed-training">5. Distributed training</h3>
+
+<p>We would like to use multiple GPUs in parallel to perform large experiments quickly. Typically, we would just parallelise data, splitting up large minibatch sizes by sending different data to different GPUs. With VOGN, we can also parallelise computation over Monte-Carlo samples $\vparam_t \sim q_t(\vparam)$. Every GPU can use a different sample $\vparam_t$. This reduces variance during training, and we empirically find it leads to quicker convergence.</p>
+
+<h3 id="6-external-damping-factor">6. External damping factor</h3>
+
+<p>We introduce an external damping factor $\gamma$, added to $\vs_{t+1}$ in the denominator of Equation \eqref{eq:VOGN_mu} (<a href="https://arxiv.org/pdf/1712.02390.pdf">Zhang et al., 2018</a>).
+This increases the lower bound of the eigenvalues on the diagonal covariance $\vSigma_t$, preventing the step size and noise from becoming too large. However, this also detracts from the principled variational inference equations, and there is currently no theoretical justification for this (beyond the intuition we just provided).</p>
+
+<h3 id="final-algorithm">Final algorithm</h3>
+
+<p>Let’s recap. We derived the VOGN equations (Equations \eqref{eq:VOGN_mu} and \eqref{eq:VOGN_Sigma}) in the <a href="https://mlg-blog.com/2021/04/13/ngvi-bnns-part-1.html">previous blog post</a>. We started this post by comparing the equations to Adam, noting key similarities and differences. One key difference was based off the Gauss-Newton approximation, which slows VOGN down (per epoch) compared to SGD-based algorithms like Adam. Based on the similarities, we borrowed tricks to scale Adam to large data settings, and applied them to VOGN.</p>
+
+<p>All of these tricks are important to get VOGN’s results on ImageNet. The final algorithm is summarised in <a href="#figure-VOGNalgorithm">Algorithm 1</a> below.
+One downside of VOGN when compared to Adam is the additional hyperparameters that require tuning. At the end of this blog post, we provide best practices for tuning these hyperparameters.</p>
+
+<div class="image-container">
+    <img src="/blog/assets/images/ngvi-bnns/VOGN_algorithm_figure.png" alt="Final algorithm, ready for running on ImageNet. Additional notes explaining key steps are in red. The vanilla VOGN equations (Equations \eqref{eq:VOGN_mu} and \eqref{eq:VOGN_Sigma}) are in Steps 8–12 &amp; 18–19. The final list of hyperparameters are summarised in the bottom right. The final four hyperparameters are specific to VOGN, and we provide best practices for tuning them at the end of the blog post." id="figure-VOGNalgorithm" style="width: 100%; max-width: 700px" />
+    
+        <p class="caption">
+            Algorithm 1: Final algorithm, ready for running on ImageNet. Additional notes explaining key steps are in red. The vanilla VOGN equations (Equations \eqref{eq:VOGN_mu} and \eqref{eq:VOGN_Sigma}) are in Steps 8–12 &amp; 18–19. The final list of hyperparameters are summarised in the bottom right. The final four hyperparameters are specific to VOGN, and we provide best practices for tuning them at the end of the blog post.
+        </p>
+    
+</div>
+
+<h2 id="results-on-imagenet">Results on ImageNet</h2>
+
+<p>We are finally in a place to run VOGN on ImageNet and analyse results. We take <a href="#figure-VOGNalgorithm">Algorithm 1</a>and run it on ImageNet.</p>
+
+<div class="image-container">
+    <img src="/blog/assets/images/ngvi-bnns/ImageNet_results.png" alt="Results on ImageNet. VOGN converges in about as many epochs as Adam and SGD (top left plot), but is almost twice as slow per epoch (top middle plot). VOGN's calibration is better (top right plot). Overall, VOGN gets good accuracy and uncertainty metrics. See the paper for standard deviations over many runs." id="figure-ImageNetResults" style="width: 100%; max-width: 700px" />
+    
+        <p class="caption">
+            Figure 1: Results on ImageNet. VOGN converges in about as many epochs as Adam and SGD (top left plot), but is almost twice as slow per epoch (top middle plot). VOGN's calibration is better (top right plot). Overall, VOGN gets good accuracy and uncertainty metrics. See the paper for standard deviations over many runs.
+        </p>
+    
+</div>
+
+<p>Let’s go through these results slowly.</p>
+
+<ul>
+  <li>Top left plot: VOGN’s convergence rate (per epoch) is very similar to Adam’s. The step increases (at epochs 30 and 60) are due to learning rate scheduling, which is best practice for training algorithms on ImageNet.</li>
+  <li>Top middle plot: VOGN is about twice as slow (total time) compared to SGD and Adam. This is impressive compared to other approaches like Bayes-By-Backprop (<a href="https://arxiv.org/pdf/1505.05424.pdf">Blundell et al., 2015</a>), which currently can’t scale to ImageNet even if given an order of magnitude more time!</li>
+  <li>Top right plot: In this calibration curve, the red line is closer to the diagonal than the other lines, showing better calibration. This plot is summarised in the ECE (Expected Calibration Error) column in the Table, where VOGN is better than SGD and Adam.</li>
+  <li>Turning our attention to the Table, MC-dropout gets very good ECE, but this is at the cost of validation accuracy, and only achieved after a fine-grain sweep of hyperparameters (specifically the dropout rate, see Appendix G in the paper).</li>
+  <li>OGN is a deterministic version of VOGN, where we do not use the reparameterisation trick to sample $\vparam_t$ during training (Steps 8 &amp; 9 in <a href="#figure-VOGNalgorithm">Algorithm 1</a>), and instead just use the mean $\vmu_t$.</li>
+  <li>K-FAC has a Kronecker-factored structure as in <a href="https://arxiv.org/pdf/1811.12019.pdf">Osawa et al. (2018)</a>, where they impressively trained on ImageNet in very few iterations. <a href="https://towardsdatascience.com/introducing-k-fac-and-its-application-for-large-scale-deep-learning-4e3f9b443414">This blog post</a> provides an introduction to K-FAC at a large scale.</li>
+  <li>OGN and K-FAC perform well, but their metrics (particularly validation accuracy, validation negative-log-likelihood and ECE) are worse than VOGN.</li>
+  <li>Noisy K-FAC (<a href="https://arxiv.org/pdf/1712.02390.pdf">Zhang et al., 2018</a>) takes a similar algorithm to VOGN and adds K-FAC structure to the covariance matrix. It is therefore more computationally expensive than VOGN (slower per epoch and total training time), but requires fewer epochs. It performs decently, but not as well as VOGN in this experiment.</li>
+</ul>
+
+<p>There are many more results in <a href="https://arxiv.org/pdf/1906.02506.pdf">Osawa et al. (2019)</a>, such as CIFAR-10 with a variety of architectures. We tend to see a similar story, where VOGN performs comparably on validation accuracy, and well on uncertainty metrics.</p>
+
+<h3 id="some-bayesian-trade-offs">Some Bayesian trade-offs</h3>
+
+<p>Due to the Bayesian nature of VOGN, we see some interesting trade-offs (see the paper for figures).</p>
+
+<ol>
+  <li>
+    <p>Reducing the prior precision $\delta$ results in higher validation accuracy, but also a larger train-test gap, corresponding to more overfitting. With very small prior precisions, performance is similar to non-Bayesian methods like Adam.</p>
+  </li>
+  <li>
+    <p>Increasing the number of training MC samples ($K$ in <a href="#figure-VOGNalgorithm">Algorithm 1</a>) improves VOGN’s convergence rate and stability, as it reduces gradient variance during training. But this is at the cost of increased computation. Increasing the number of MC samples during testing improves generalisation.</p>
+  </li>
+</ol>
+
+<h2 id="downstream-uncertainty-performance">Downstream uncertainty performance</h2>
+
+<p>If you are like me, metrics such as negative-log-likelihood and expected calibration error do not mean much when it comes to analysing if your algorithm has ‘better uncertainty’.
+We should also test on downstream tasks to see how reliable our methods are, and more and more papers are starting to do so (see also this year’s <a href="https://neurips.cc/Conferences/2021/Schedule?showEvent=21827">NeurIPS Bayesian Deep Learning workshop</a>, which makes this a priority). The VOGN paper tested on two downstream tasks: continual learning and out-of-distribution performance.</p>
+
+<p><strong>Continual Learning</strong>: I personally think continual learning is a very good way to test approximate Bayesian inference algorithms, particularly variational deep-learning algorithms. We tested VOGN on Permuted MNIST, finding it performs as well as VCL (<a href="https://arxiv.org/pdf/1710.10628.pdf">Nguyen et al., 2018</a>; <a href="https://arxiv.org/pdf/1905.02099.pdf">Swaroop et al., 2019</a>),  but trained more than an order of magnitude quicker. More recently, VOGN has also achieved good results on a bigger Split CIFAR benchmark (see Section 4.5 of <a href="https://team-approx-bayes.github.io/assets/rgroups/thesis_runa_eschenhagen.pdf">Eschenhagen (2019)</a>), which VCL struggles to scale to.</p>
+
+<p><strong>Out-of-distribution performance</strong>: We also tested VOGN on standard out-of-distribution benchmarks, such as training on CIFAR-10 and testing on SVHN and LSUN. Figure 5 in the paper shows results (histograms of predictive entropy), where we qualitatively see VOGN performing well.</p>
+
+<h2 id="conclusions-and-further-reading">Conclusions and further reading</h2>
+
+<p>In the first blog post, we derived VOGN, our natural-gradient variational inference algorithm. In this blog post, we scaled it all the way to ImageNet. We made approximations along the way, but by being clever about when and where to make approximations, we have ended up with a practical algorithm that has Bayesian principles. Our final algorithm therefore performs reasonably well in downstream tasks.</p>
+
+<p>It has been two years since publishing VOGN’s performance on ImageNet, and the field continues to move at break-neck pace. More algorithms and more benchmarks continue to be published, as well as more insight into VI.</p>
+<ul>
+  <li>If you are interested in the maths of improving natural-gradient variational inference algorithms, I particularly recommend work by Wu Lin and co-authors. They looked at improving VON (same as VOGN but without the Gauss-Newton matrix approximation), deriving another quick NGVI algorithm that can perform well (<a href="https://arxiv.org/pdf/2002.10060.pdf">Lin et al., 2020</a>).
+They have also expanded to mixtures of exponential family distributions (<a href="https://arxiv.org/pdf/1906.02914.pdf">Lin et al., 2019</a>), and looked at structured natural gradient descent, drawing links to Newton-like algorithms (<a href="https://arxiv.org/pdf/2102.07405.pdf">Lin et al., 2021</a>).</li>
+  <li>There is also interesting work looking at pathologies of mean-field VI on neural networks (VOGN is a mean-field VI algorithm). There are problems in the single-hidden-layer setting (<a href="https://arxiv.org/pdf/1909.00719.pdf">Foong et al., 2020</a>), and problems in the wide limit (<a href="https://arxiv.org/pdf/2106.07052.pdf">Coker et al., 2021</a>).</li>
+</ul>
+
+<h2 id="acknowledgements">Acknowledgements</h2>
+
+<p>Firstly, many thanks to my co-authors Kazuki Osawa, Anirudh Jain, Runa Eschenhagen, Richard Turner, Rio Yokota and Emtiyaz Khan, many of whom also provided valuable feedback on these blog posts. I would also like to thank Andrew Foong, Wessel Bruinsma and Stratis Markou for their comments during drafting of these blog posts.</p>
+
+<h2 id="post-scipt-a-guide-on-how-to-tune-vogn">Post-scipt: A guide on how to tune VOGN</h2>
+
+<p>As we saw in <a href="#figure-VOGNalgorithm">Algorithm 1</a>, there are many hyperparameters that need tuning for VOGN (and generally for VI at a large-scale). Here we briefly summarise how we did this in <a href="https://arxiv.org/pdf/1906.02506.pdf">Osawa et al. (2019)</a>, following the guidelines presented in Section 3 of the paper. The key idea is to make sure VOGN training closely follows Adam’s trajectory in the beginning of training.</p>
+
+<ol>
+  <li>
+    <p>First, we tune hyperparameters for OGN, which is the same as VOGN except setting $\vparam_t=\vmu_t$ (no MC sampling). OGN is more stable than VOGN and is a convenient stepping stone as we move from Adam to VOGN. So, we initialise OGN’s hyperparameters at Adam’s values, and tune until OGN is competitive with Adam. This requires tuning learning rates, prior precision $\delta$, and setting a suitable value for the data augmentation factor (if using data augmentation).</p>
+  </li>
+  <li>
+    <p>Then, we move to VOGN. Now, we (fine-)tune the prior precision $\delta$, warm-start the tempering parameter $\tau$ (such as increasing $\tau$ from $0.1\rightarrow1$ during the first few optimisation steps), and the number of MC samples $K$ for VOGN (more samples means more stable training, but more computation cost). We also now consider adding an external damping factor $\gamma$ if required.</p>
+  </li>
+</ol>
+
+
+    
+        <nav>
+            
+                <div class="prev"><a href="/blog/2021/07/21/subnetwork-inference.html">&laquo; Bayesian Deep Learning via Subnetwork Inference</a></div>
+            
+            
+                <div class="next"><a href="/blog/2024/01/20/flow-matching.html">An introduction to Flow Matching &raquo;</a></div>
+            
+        </nav>
+    
+
+    <date>
+        Published on 24 November 2021.
+        
+    </date>
+
+    
+        
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            var disqus_config = function() {
+                this.page.url = 'https://mlg.eng.cam.ac.uk/blog/2021/11/24/ngvi-bnns-part-2.html';
+                this.page.identifier = '/2021/11/24/ngvi-bnns-part-2';
+            };
+            (function() {
+                var d = document;
+                s = d.createElement('script');
+                s.src = 'https://mlg-blog.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+                $('#enable-disqus-button').css('display', 'none');
+            })()
+        </script>
+        <noscript>
+            Please enable JavaScript to view the comments powered by <a href="https://disqus.com/?ref_noscript" rel="nofollow">Disqus.</a>
+        </noscript>
+    
+</article>
+
+                </main>
+            </div>
+
+            <!-- Footer -->
+<!--             <footer>
+                <div class="centered">
+                    <p class="links">
+                        This is the blog of the
+                        <a href="https://mlg.eng.cam.ac.uk/">Cambridge Machine Learning Group</a>.
+                        Follow us on Twitter
+                            <a href="https://twitter.com/CambridgeMLG" id="twitter-button">@CambridgeMLG</a>
+                        and check out our GitHub
+                            <a href="https://github.com/cambridge-mlg/" id="github-button">cambridge-mlg</a>.
+                    </p>
+                    <p class="closing">
+                        &copy; <a href="https://mlg.eng.cam.ac.uk/">Cambridge Machine Learning Group</a>.
+                        Design by <a href="https://wesselb.github.io">wesselb.github.io</a>.
+                        Powered by <a href="https://jekyllrb.com/">Jekyll</a>.
+                        Icons by <a href="https://icons8.com">Icons8</a>.
+                        <a href="/blog/feed.xml" id="feed-button">Feed</a>.
+                    </p>
+                </div>
+            </footer> -->
+            <footer id="footer">
+                <style>#footer p{text-align: center !important;}</style>
+                <p><a href="https://mlg.eng.cam.ac.uk/">Cambridge Machine Learning Group</a>. Follow us on <span class="icon twitter-icon"></span><a href="https://twitter.com/CambridgeMLG">@CambridgeMLG</a> and check out our GitHub <span class="icon github-icon"></span><a href="https://github.com/cambridge-mlg">Cambridge-MLG</a>.</p>
+                <p>This blog is designed by <a href="https://wesselb.github.io">Wessel</a> & <a href="https://shravangoswami.com/">Shravan</a>!</p>
+                <p>Powered by <a href="https://jekyllrb.com/">Jekyll</a>. Icons by <a href="https://icons8.com">Icons8</a>. &copy; <a href="https://mlg.eng.cam.ac.uk/">Cambridge Machine Learning Group</a>.</p>
+            </footer>
+
+        </div>
+
+        
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-216EYNZ435"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-216EYNZ435');
+</script>
+
+    </body>
+</html>

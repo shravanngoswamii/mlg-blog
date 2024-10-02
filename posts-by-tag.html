@@ -1,0 +1,1106 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="Blog of the Machine Learning Group at the University of Cambridge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="/blog/assets/images/cbl.png">
+
+    <title>Posts by Tag · Cambridge MLG Blog</title>
+
+    <link rel="stylesheet" href="/blog/assets/css/normalize.css">
+    <link rel="stylesheet" href="/blog/assets/css/h5bp.css">
+    <link rel="stylesheet" href="/blog/assets/css/solarized-light.css">
+    <link rel="stylesheet" href="/blog/assets/css/style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anaheim">
+
+    <!-- Preload icons from Icons8. -->
+<script type="text/javascript">
+    (new Image()).src = "/blog/assets/images/icons8-github-blue.png";
+    (new Image()).src = "/blog/assets/images/icons8-github-white.png";
+    (new Image()).src = "/blog/assets/images/icons8-link-blue.png";
+    (new Image()).src = "/blog/assets/images/icons8-link-grey.png";
+    (new Image()).src = "/blog/assets/images/icons8-ok.png";
+    (new Image()).src = "/blog/assets/images/icons8-rss-blue.png";
+    (new Image()).src = "/blog/assets/images/icons8-rss-dark.png";
+    (new Image()).src = "/blog/assets/images/icons8-rss-white.png";
+    (new Image()).src = "/blog/assets/images/icons8-twitter-blue.png";
+    (new Image()).src = "/blog/assets/images/icons8-twitter-white.png";
+</script>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+    <script type="text/javascript" src="/blog/assets/links.js"></script>
+    
+
+    <script type="text/javascript">
+        page_url = "https://mlg.eng.cam.ac.uk/posts-by-tag"
+    </script>
+
+    <script type="text/javascript">
+    window.MathJax = {
+        tex: {
+            inlineMath: [['$', '$'], ['$$', '$$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']],
+            packages: {'[+]': ['ams', 'newcommand']},
+            tags: 'all',
+            macros: {
+                Normal: '\\mathcal{N}',
+                R: '\\mathbb{R}',
+                E: '\\mathbb{E}',
+                C: '\\mathbb{C}',
+                sd: '\\text{d}',
+                pd: '\\partial',
+                cond: '\\,|\\,',
+                ll: '\\left\\langle',
+                rr: '\\right\\rangle',
+                fp: '\\operatorname{fp}',
+                argmax: '\\operatorname{arg\\,max}',
+                argmin: '\\operatorname{arg\\,min}',
+                e: '\\varepsilon',
+                code: ['{\\small \\texttt{#1}}', 1],
+                parens: ['\\left( #1 \\right)', 1]
+            }
+        }
+    };
+</script>
+<script type="text/javascript" id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+</script>
+</head>
+
+    <body>
+        <!-- This input is here to make copying to clipboard work on iOS. -->
+        <input type="text" id="selection-dummy" style="display: none;" contenteditable="true" readonly="false">
+
+        <div id="wrapper">
+            <nav class="mlg-navbar">
+                <style>
+                    .mlg-navbar {
+                        font-family: 'Anaheim', sans-serif;
+                        background-color: #eeeeee;
+                        padding: 13.5px;
+                    }
+
+                    .mlg-navbar a {
+                        text-decoration: none;
+                    }
+
+                    .mlg-navbar-container {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        max-width: 1500px;
+                        margin: 0 auto;
+                    }
+
+                    .mlg-navbar-brand {
+                        display: flex;
+                        align-items: center;
+                        margin-left: 12px;
+                    }
+
+                    .mlg-navbar-logo {
+                        height: 1.5rem;
+                        margin-right: 8px;
+                    }
+
+                    .mlg-navbar-title {
+                        color: #333;
+                        font-size: 21.26px;
+                    }
+
+                    @media screen and (min-width: 1246px) {
+                        .mlg-title-hide-desktop {
+                            display: none;
+                        }
+                    }
+
+                    @media screen and (max-width: 1246px) {
+                        .mlg-title-hide-mobile {
+                            display: none;
+                        }
+                    }
+
+                    .mlg-navbar-nav {
+                        display: flex;
+                        list-style-type: none;
+                        margin: 0;
+                        padding: 0;
+                    }
+
+                    .mlg-nav-item {
+                        margin-left: 24px;
+                    }
+
+                    .mlg-nav-link {
+                        text-decoration: none;
+                        color: #333;
+                        font-size: 16px;
+                    }
+
+                    .mlg-nav-link:hover {
+                        color: #193d8f;
+                    }
+
+                    .mlg-navbar-toggler-icon {
+                        display: none;
+                        width: 30px;
+                        height: 30px;
+                        background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'><path stroke='%233b4248' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/></svg>");
+                        background-size: contain;
+                        cursor: pointer;
+                    }
+
+                    @media (max-width: 768px) {
+                        .mlg-navbar-container {
+                            flex-wrap: wrap;
+                            justify-content: flex-start;
+                        }
+
+                        .mlg-navbar-toggler-icon {
+                            display: block;
+                            margin-left: 15px;
+                        }
+
+                        .mlg-navbar-nav {
+                            flex-direction: column;
+                            width: 100%;
+                            display: none;
+                            margin-top: 10px;
+                        }
+
+                        .mlg-nav-item {
+                            line-height: 25.5px;
+                            margin: 9px 18px;
+                        }
+
+                        .mlg-navbar-nav.mlg-active {
+                            display: flex;
+                        }
+                    }
+                    footer {
+                        position: absolute;
+                        max-width: 100% !important;
+                        background-color: #e3e1e1;
+                        color: #3b4248;
+                        padding-bottom: 20px;
+                        padding-top: 5px;
+                        text-align: center !important;
+                        font-size: 14px;
+                        line-height: 1;
+                        z-index: 1020;
+                        height: fit-content;
+                    }
+
+                    footer a {
+                        color: #193d8f;
+                        text-decoration: none;
+                    }
+
+                    footer a:hover {
+                        text-decoration: underline;
+                    }
+                    
+                    @media(max-width: 767.98px) {
+                        .nav-footer-center {
+                            margin-top: 0 !important;
+                        }
+                    }
+                </style>
+                <div class="mlg-navbar-container">
+                    <span class="mlg-navbar-toggler-icon"></span>
+                    <a href="https://mlg.eng.cam.ac.uk/" class="mlg-navbar-brand">
+                        <img src="https://mlg.eng.cam.ac.uk/preview/assets/logo/logo.png" alt="Cambridge Logo" class="mlg-navbar-logo">
+                        <span class='mlg-title-hide-mobile mlg-navbar-title'>Machine Learning Group, Department of Engineering, Cambridge</span>
+                        <span class='mlg-title-hide-desktop mlg-navbar-title'>MLG Cambridge</span>
+                    </a>
+                    <ul class="mlg-navbar-nav">
+                        <li class="mlg-nav-item"><a class="mlg-nav-link" href="https://mlg.eng.cam.ac.uk/about.html">About Us</a></li>
+                        <li class="mlg-nav-item"><a class="mlg-nav-link" href="https://mlg.eng.cam.ac.uk/news/">News</a></li>
+                        <li class="mlg-nav-item"><a class="mlg-nav-link" href="https://mlg.eng.cam.ac.uk/research/">Research</a></li>
+                        <li class="mlg-nav-item"><a class="mlg-nav-link" href="https://mlg.eng.cam.ac.uk/publications/">Publications</a></li>
+                        <li class="mlg-nav-item"><a class="mlg-nav-link" href="https://mlg.eng.cam.ac.uk/people/">People</a></li>
+                        <li class="mlg-nav-item"><a class="mlg-nav-link" href="https://mlg.eng.cam.ac.uk/phd_programme_in_advanced_machine_learning.html">PhD Admissions</a></li>
+                        <li class="mlg-nav-item"><a class="mlg-nav-link" href="https://mlg.eng.cam.ac.uk/blog">Blog</a></li>
+                    </ul>
+                </div>
+                <script>
+                    document.querySelector('.mlg-navbar-toggler-icon').addEventListener('click', function () {
+                        document.querySelector('.mlg-navbar-nav').classList.toggle('mlg-active');
+                    });
+                </script>
+            </nav>
+
+            <!-- Header and menu -->
+            <header>
+                <div class="shaded">
+                    <div class="centered">
+<!--                         <div id="header-logo">
+                            <img src="/blog/assets/images/cbl.png" alt="CBL">
+                        </div> -->
+<!--                         <a href="/" id="header-title">Cambridge MLG</a> -->
+                        <nav id="menu">
+<!--                             <a href="/blog/">Blog</a> -->
+                            <a href="/blog/posts-by-tag">tags</a>
+                        </nav>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main content -->
+            <div class="centered">
+                <main>
+                    <!-- Capture all tags. -->
+
+
+
+<!-- Print tags. -->
+<p class="tags posts-by-tag">
+    <a href="#Bayesian+inference" class="tag">Bayesian inference
+            <span class="count">(2)</span>
+        </a><a href="#chemistry" class="tag">chemistry
+            <span class="count">(1)</span>
+        </a><a href="#deep+learning" class="tag">deep learning
+            <span class="count">(2)</span>
+        </a><a href="#diffusion+model" class="tag">diffusion model
+            <span class="count">(1)</span>
+        </a><a href="#foundations" class="tag">foundations
+            <span class="count">(2)</span>
+        </a><a href="#generative+modelling" class="tag">generative modelling
+            <span class="count">(1)</span>
+        </a><a href="#mathematics" class="tag">mathematics
+            <span class="count">(1)</span>
+        </a><a href="#molecular+design" class="tag">molecular design
+            <span class="count">(1)</span>
+        </a><a href="#normalising+flows" class="tag">normalising flows
+            <span class="count">(1)</span>
+        </a><a href="#reinforcement+learning" class="tag">reinforcement learning
+            <span class="count">(1)</span>
+        </a><a href="#theory" class="tag">theory
+            <span class="count">(3)</span>
+        </a>
+</p>
+
+<!-- Print sections associated to tags. -->
+
+    
+    
+    <h2 id="Bayesian+inference" class="small-share-shift">Bayesian Inference </h2>
+    <ul class="posts">
+    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+            
+            <li class="post" onclick="location.href='/blog/2021/11/24/ngvi-bnns-part-2.html';">
+                    <div style="background-image: url(/blog/assets/images/ngvi-bnns/Imagenet_short.png)" class="representative-image"> </div>
+                        <div class="content with-image">
+                    
+                        <h2 class="no-link">
+                            <date> 24 November 2021 </date>
+                            Natural-Gradient Variational Inference 2: ImageNet-scale
+                        </h2>
+                        <div class="authors">
+                            <span class="authors-text">By</span>
+                            <a href="https://siddharthswaroop.github.io/">Siddharth Swaroop</a>
+                        </div>
+                        Having derived a natural-gradient variational inference algorithm, we now turn our attention to scaling it all the way to ImageNet. By borrowing tricks developed for Adam, we can get fast convergence, good performance, and reasonable uncertainties.
+
+                    </div>
+                </a>
+            </li>
+        
+    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+            
+            <li class="post" onclick="location.href='/blog/2021/07/21/subnetwork-inference.html';">
+                    <div style="background-image: url(/blog/assets/images/subnetwork-inference/d_prediction.png)" class="representative-image"> </div>
+                        <div class="content with-image">
+                    
+                        <h2 class="no-link">
+                            <date> 21 July 2021 </date>
+                            Bayesian Deep Learning via Subnetwork Inference
+                        </h2>
+                        <div class="authors">
+                            <span class="authors-text">By</span>
+                            <a href="https://edaxberger.github.io">Erik Daxberger</a>, <a href="https://enalisnick.github.io">Eric Nalisnick</a>
+                        </div>
+                        Bayesian inference has the potential to address shortcomings of deep neural networks (DNNs) such as poor calibration. However, scaling Bayesian methods to modern DNNs is challenging. This blog post describes <i>subnetwork inference</i>, a method that tackles this issue by doing inference over only a small, carefully selected subset of the DNN weights.
+
+                    </div>
+                </a>
+            </li>
+        
+    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+</ul>
+
+    
+    
+    <h2 id="chemistry" class="small-share-shift">Chemistry </h2>
+    <ul class="posts">
+    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+            
+            <li class="post" onclick="location.href='/blog/2021/04/30/reinforcement-learning-for-3d-molecular-design.html';">
+                    <div style="background-image: url(/blog/assets/images/molgym/intro.png)" class="representative-image"> </div>
+                        <div class="content with-image">
+                    
+                        <h2 class="no-link">
+                            <date> 30 April 2021 </date>
+                            Reinforcement Learning for 3D Molecular Design
+                        </h2>
+                        <div class="authors">
+                            <span class="authors-text">By</span>
+                            <a href="https://www.robertpinsler.com">Robert Pinsler</a>, <a href="https://www.gncs.me">Gregor N. C. Simm</a>
+                        </div>
+                        Automating the design of molecules with desirable properties can greatly accelerate the search for novel drugs and materials. However, to make further progress we need to go beyond graph-based approaches. In this blog post, we use ideas from reinforcement learning and quantum chemistry to make a first step towards 3D molecular design.
+
+                    </div>
+                </a>
+            </li>
+        
+    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+</ul>
+
+    
+    
+    <h2 id="deep+learning" class="small-share-shift">Deep Learning </h2>
+    <ul class="posts">
+    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+            
+            <li class="post" onclick="location.href='/blog/2021/11/24/ngvi-bnns-part-2.html';">
+                    <div style="background-image: url(/blog/assets/images/ngvi-bnns/Imagenet_short.png)" class="representative-image"> </div>
+                        <div class="content with-image">
+                    
+                        <h2 class="no-link">
+                            <date> 24 November 2021 </date>
+                            Natural-Gradient Variational Inference 2: ImageNet-scale
+                        </h2>
+                        <div class="authors">
+                            <span class="authors-text">By</span>
+                            <a href="https://siddharthswaroop.github.io/">Siddharth Swaroop</a>
+                        </div>
+                        Having derived a natural-gradient variational inference algorithm, we now turn our attention to scaling it all the way to ImageNet. By borrowing tricks developed for Adam, we can get fast convergence, good performance, and reasonable uncertainties.
+
+                    </div>
+                </a>
+            </li>
+        
+    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+            
+            <li class="post" onclick="location.href='/blog/2021/07/21/subnetwork-inference.html';">
+                    <div style="background-image: url(/blog/assets/images/subnetwork-inference/d_prediction.png)" class="representative-image"> </div>
+                        <div class="content with-image">
+                    
+                        <h2 class="no-link">
+                            <date> 21 July 2021 </date>
+                            Bayesian Deep Learning via Subnetwork Inference
+                        </h2>
+                        <div class="authors">
+                            <span class="authors-text">By</span>
+                            <a href="https://edaxberger.github.io">Erik Daxberger</a>, <a href="https://enalisnick.github.io">Eric Nalisnick</a>
+                        </div>
+                        Bayesian inference has the potential to address shortcomings of deep neural networks (DNNs) such as poor calibration. However, scaling Bayesian methods to modern DNNs is challenging. This blog post describes <i>subnetwork inference</i>, a method that tackles this issue by doing inference over only a small, carefully selected subset of the DNN weights.
+
+                    </div>
+                </a>
+            </li>
+        
+    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+</ul>
+
+    
+    
+    <h2 id="diffusion+model" class="small-share-shift">Diffusion Model </h2>
+    <ul class="posts">
+    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+            
+            <li class="post" onclick="location.href='/blog/2024/01/20/flow-matching.html';">
+                    <div style="background-image: url(/blog/assets/images/flow-matching/representative.gif)" class="representative-image"> </div>
+                        <div class="content with-image">
+                    
+                        <h2 class="no-link">
+                            <date> 20 January 2024 </date>
+                            An introduction to Flow Matching
+                        </h2>
+                        <div class="authors">
+                            <span class="authors-text">By</span>
+                            <a href="https://retiredparkingguard.com/about.html">Tor Fjelde</a>, <a href="www.emilemathieu.fr">Emile Mathieu</a>, <a href="https://vdutor.github.io/">Vincent Dutordoir</a>
+                        </div>
+                        Flow matching (FM) is a new generative modelling paradigm which is rapidly gaining popularity in the deep learning community. Flow matching combines aspects from Continuous Normalising Flows (CNFs) and Diffusion Models (DMs), alleviating key issues both methods have. In this blogpost we’ll cover the main ideas and unique properties of FM models starting from the basics.
+
+                    </div>
+                </a>
+            </li>
+        
+    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+</ul>
+
+    
+    
+    <h2 id="foundations" class="small-share-shift">Foundations </h2>
+    <ul class="posts">
+    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+            
+            <li class="post" onclick="location.href='/blog/2021/03/31/what-keeps-a-bayesian-awake-at-night-part-2.html';">
+                    <div style="background-image: url(/blog/assets/images/what-keeps-a-bayesian-awake-at-night/night.jpg)" class="representative-image"> </div>
+                        <div class="content with-image">
+                    
+                        <h2 class="no-link">
+                            <date> 31 March 2021 </date>
+                            What Keeps a Bayesian Awake At Night? Part 2: Night Time
+                        </h2>
+                        <div class="authors">
+                            <span class="authors-text">By</span>
+                            <a href="https://wesselb.github.io">Wessel Bruinsma</a>, <a href="https://andrewfoongyk.github.io">Andrew Y. K. Foong</a>, <a href="http://cbl.eng.cam.ac.uk/Public/Turner/Turner">Richard E. Turner</a>
+                        </div>
+                        <i>The theory of subjective probability describes ideally consistent behaviour and ought not, therefore, be taken too literally. <br>
+— Leonard Jimmie Savage (1917–1971)</i>
+
+                    </div>
+                </a>
+            </li>
+        
+    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+            
+            <li class="post" onclick="location.href='/blog/2021/03/31/what-keeps-a-bayesian-awake-at-night-part-1.html';">
+                    <div style="background-image: url(/blog/assets/images/what-keeps-a-bayesian-awake-at-night/day.jpg)" class="representative-image"> </div>
+                        <div class="content with-image">
+                    
+                        <h2 class="no-link">
+                            <date> 31 March 2021 </date>
+                            What Keeps a Bayesian Awake At Night? Part 1: Day Time
+                        </h2>
+                        <div class="authors">
+                            <span class="authors-text">By</span>
+                            <a href="https://wesselb.github.io">Wessel Bruinsma</a>, <a href="https://andrewfoongyk.github.io">Andrew Y. K. Foong</a>, <a href="http://cbl.eng.cam.ac.uk/Public/Turner/Turner">Richard E. Turner</a>
+                        </div>
+                        <i>The theory of probabilities is at bottom nothing but common sense reduced to calculus;
+it enables us to appreciate with exactness that which accurate minds feel with a sort of instinct for which ofttimes they are unable to account. <br>
+— Pierre-Simon Laplace (1749–1827)</i>
+
+                    </div>
+                </a>
+            </li>
+        
+    
+</ul>
+
+    
+    
+    <h2 id="generative+modelling" class="small-share-shift">Generative Modelling </h2>
+    <ul class="posts">
+    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+            
+            <li class="post" onclick="location.href='/blog/2024/01/20/flow-matching.html';">
+                    <div style="background-image: url(/blog/assets/images/flow-matching/representative.gif)" class="representative-image"> </div>
+                        <div class="content with-image">
+                    
+                        <h2 class="no-link">
+                            <date> 20 January 2024 </date>
+                            An introduction to Flow Matching
+                        </h2>
+                        <div class="authors">
+                            <span class="authors-text">By</span>
+                            <a href="https://retiredparkingguard.com/about.html">Tor Fjelde</a>, <a href="www.emilemathieu.fr">Emile Mathieu</a>, <a href="https://vdutor.github.io/">Vincent Dutordoir</a>
+                        </div>
+                        Flow matching (FM) is a new generative modelling paradigm which is rapidly gaining popularity in the deep learning community. Flow matching combines aspects from Continuous Normalising Flows (CNFs) and Diffusion Models (DMs), alleviating key issues both methods have. In this blogpost we’ll cover the main ideas and unique properties of FM models starting from the basics.
+
+                    </div>
+                </a>
+            </li>
+        
+    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+</ul>
+
+    
+    
+    <h2 id="mathematics" class="small-share-shift">Mathematics </h2>
+    <ul class="posts">
+    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+            
+            <li class="post" onclick="location.href='/blog/2021/04/13/ngvi-bnns-part-1.html';">
+                    <div style="background-image: url(/blog/assets/images/ngvi-bnns/representative-image.png)" class="representative-image"> </div>
+                        <div class="content with-image">
+                    
+                        <h2 class="no-link">
+                            <date> 13 April 2021 </date>
+                            Natural-Gradient Variational Inference 1: The Maths
+                        </h2>
+                        <div class="authors">
+                            <span class="authors-text">By</span>
+                            <a href="https://siddharthswaroop.github.io/">Siddharth Swaroop</a>
+                        </div>
+                        What does it mean to combine variational inference with natural gradients? Can this scale to neural networks? What kind of approximations do we need to make? We take a detailed look at the mathematical derivations of such algorithms.
+
+                    </div>
+                </a>
+            </li>
+        
+    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+</ul>
+
+    
+    
+    <h2 id="molecular+design" class="small-share-shift">Molecular Design </h2>
+    <ul class="posts">
+    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+            
+            <li class="post" onclick="location.href='/blog/2021/04/30/reinforcement-learning-for-3d-molecular-design.html';">
+                    <div style="background-image: url(/blog/assets/images/molgym/intro.png)" class="representative-image"> </div>
+                        <div class="content with-image">
+                    
+                        <h2 class="no-link">
+                            <date> 30 April 2021 </date>
+                            Reinforcement Learning for 3D Molecular Design
+                        </h2>
+                        <div class="authors">
+                            <span class="authors-text">By</span>
+                            <a href="https://www.robertpinsler.com">Robert Pinsler</a>, <a href="https://www.gncs.me">Gregor N. C. Simm</a>
+                        </div>
+                        Automating the design of molecules with desirable properties can greatly accelerate the search for novel drugs and materials. However, to make further progress we need to go beyond graph-based approaches. In this blog post, we use ideas from reinforcement learning and quantum chemistry to make a first step towards 3D molecular design.
+
+                    </div>
+                </a>
+            </li>
+        
+    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+</ul>
+
+    
+    
+    <h2 id="normalising+flows" class="small-share-shift">Normalising Flows </h2>
+    <ul class="posts">
+    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+            
+            <li class="post" onclick="location.href='/blog/2024/01/20/flow-matching.html';">
+                    <div style="background-image: url(/blog/assets/images/flow-matching/representative.gif)" class="representative-image"> </div>
+                        <div class="content with-image">
+                    
+                        <h2 class="no-link">
+                            <date> 20 January 2024 </date>
+                            An introduction to Flow Matching
+                        </h2>
+                        <div class="authors">
+                            <span class="authors-text">By</span>
+                            <a href="https://retiredparkingguard.com/about.html">Tor Fjelde</a>, <a href="www.emilemathieu.fr">Emile Mathieu</a>, <a href="https://vdutor.github.io/">Vincent Dutordoir</a>
+                        </div>
+                        Flow matching (FM) is a new generative modelling paradigm which is rapidly gaining popularity in the deep learning community. Flow matching combines aspects from Continuous Normalising Flows (CNFs) and Diffusion Models (DMs), alleviating key issues both methods have. In this blogpost we’ll cover the main ideas and unique properties of FM models starting from the basics.
+
+                    </div>
+                </a>
+            </li>
+        
+    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+</ul>
+
+    
+    
+    <h2 id="reinforcement+learning" class="small-share-shift">Reinforcement Learning </h2>
+    <ul class="posts">
+    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+            
+            <li class="post" onclick="location.href='/blog/2021/04/30/reinforcement-learning-for-3d-molecular-design.html';">
+                    <div style="background-image: url(/blog/assets/images/molgym/intro.png)" class="representative-image"> </div>
+                        <div class="content with-image">
+                    
+                        <h2 class="no-link">
+                            <date> 30 April 2021 </date>
+                            Reinforcement Learning for 3D Molecular Design
+                        </h2>
+                        <div class="authors">
+                            <span class="authors-text">By</span>
+                            <a href="https://www.robertpinsler.com">Robert Pinsler</a>, <a href="https://www.gncs.me">Gregor N. C. Simm</a>
+                        </div>
+                        Automating the design of molecules with desirable properties can greatly accelerate the search for novel drugs and materials. However, to make further progress we need to go beyond graph-based approaches. In this blog post, we use ideas from reinforcement learning and quantum chemistry to make a first step towards 3D molecular design.
+
+                    </div>
+                </a>
+            </li>
+        
+    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+</ul>
+
+    
+    
+    <h2 id="theory" class="small-share-shift">Theory </h2>
+    <ul class="posts">
+    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+                    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+            
+            <li class="post" onclick="location.href='/blog/2021/04/13/ngvi-bnns-part-1.html';">
+                    <div style="background-image: url(/blog/assets/images/ngvi-bnns/representative-image.png)" class="representative-image"> </div>
+                        <div class="content with-image">
+                    
+                        <h2 class="no-link">
+                            <date> 13 April 2021 </date>
+                            Natural-Gradient Variational Inference 1: The Maths
+                        </h2>
+                        <div class="authors">
+                            <span class="authors-text">By</span>
+                            <a href="https://siddharthswaroop.github.io/">Siddharth Swaroop</a>
+                        </div>
+                        What does it mean to combine variational inference with natural gradients? Can this scale to neural networks? What kind of approximations do we need to make? We take a detailed look at the mathematical derivations of such algorithms.
+
+                    </div>
+                </a>
+            </li>
+        
+    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+            
+            <li class="post" onclick="location.href='/blog/2021/03/31/what-keeps-a-bayesian-awake-at-night-part-2.html';">
+                    <div style="background-image: url(/blog/assets/images/what-keeps-a-bayesian-awake-at-night/night.jpg)" class="representative-image"> </div>
+                        <div class="content with-image">
+                    
+                        <h2 class="no-link">
+                            <date> 31 March 2021 </date>
+                            What Keeps a Bayesian Awake At Night? Part 2: Night Time
+                        </h2>
+                        <div class="authors">
+                            <span class="authors-text">By</span>
+                            <a href="https://wesselb.github.io">Wessel Bruinsma</a>, <a href="https://andrewfoongyk.github.io">Andrew Y. K. Foong</a>, <a href="http://cbl.eng.cam.ac.uk/Public/Turner/Turner">Richard E. Turner</a>
+                        </div>
+                        <i>The theory of subjective probability describes ideally consistent behaviour and ought not, therefore, be taken too literally. <br>
+— Leonard Jimmie Savage (1917–1971)</i>
+
+                    </div>
+                </a>
+            </li>
+        
+    
+        
+            <!-- Filter by tag if a tag is given. -->
+            
+                
+            
+            <li class="post" onclick="location.href='/blog/2021/03/31/what-keeps-a-bayesian-awake-at-night-part-1.html';">
+                    <div style="background-image: url(/blog/assets/images/what-keeps-a-bayesian-awake-at-night/day.jpg)" class="representative-image"> </div>
+                        <div class="content with-image">
+                    
+                        <h2 class="no-link">
+                            <date> 31 March 2021 </date>
+                            What Keeps a Bayesian Awake At Night? Part 1: Day Time
+                        </h2>
+                        <div class="authors">
+                            <span class="authors-text">By</span>
+                            <a href="https://wesselb.github.io">Wessel Bruinsma</a>, <a href="https://andrewfoongyk.github.io">Andrew Y. K. Foong</a>, <a href="http://cbl.eng.cam.ac.uk/Public/Turner/Turner">Richard E. Turner</a>
+                        </div>
+                        <i>The theory of probabilities is at bottom nothing but common sense reduced to calculus;
+it enables us to appreciate with exactness that which accurate minds feel with a sort of instinct for which ofttimes they are unable to account. <br>
+— Pierre-Simon Laplace (1749–1827)</i>
+
+                    </div>
+                </a>
+            </li>
+        
+    
+</ul>
+
+
+                </main>
+            </div>
+
+            <!-- Footer -->
+<!--             <footer>
+                <div class="centered">
+                    <p class="links">
+                        This is the blog of the
+                        <a href="https://mlg.eng.cam.ac.uk/">Cambridge Machine Learning Group</a>.
+                        Follow us on Twitter
+                            <a href="https://twitter.com/CambridgeMLG" id="twitter-button">@CambridgeMLG</a>
+                        and check out our GitHub
+                            <a href="https://github.com/cambridge-mlg/" id="github-button">cambridge-mlg</a>.
+                    </p>
+                    <p class="closing">
+                        &copy; <a href="https://mlg.eng.cam.ac.uk/">Cambridge Machine Learning Group</a>.
+                        Design by <a href="https://wesselb.github.io">wesselb.github.io</a>.
+                        Powered by <a href="https://jekyllrb.com/">Jekyll</a>.
+                        Icons by <a href="https://icons8.com">Icons8</a>.
+                        <a href="/blog/feed.xml" id="feed-button">Feed</a>.
+                    </p>
+                </div>
+            </footer> -->
+            <footer id="footer">
+                <style>#footer p{text-align: center !important;}</style>
+                <p><a href="https://mlg.eng.cam.ac.uk/">Cambridge Machine Learning Group</a>. Follow us on <span class="icon twitter-icon"></span><a href="https://twitter.com/CambridgeMLG">@CambridgeMLG</a> and check out our GitHub <span class="icon github-icon"></span><a href="https://github.com/cambridge-mlg">Cambridge-MLG</a>.</p>
+                <p>This blog is designed by <a href="https://wesselb.github.io">Wessel</a> & <a href="https://shravangoswami.com/">Shravan</a>!</p>
+                <p>Powered by <a href="https://jekyllrb.com/">Jekyll</a>. Icons by <a href="https://icons8.com">Icons8</a>. &copy; <a href="https://mlg.eng.cam.ac.uk/">Cambridge Machine Learning Group</a>.</p>
+            </footer>
+
+        </div>
+
+        
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-216EYNZ435"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-216EYNZ435');
+</script>
+
+    </body>
+</html>
