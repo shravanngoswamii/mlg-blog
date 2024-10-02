@@ -170,9 +170,7 @@
                     }
                     header {
                         height: 100px;
-                    {% unless page.url == '/posts-by-tag' or page.url == '/posts-by-tag/' %}
                         margin-bottom: 0px;
-                    {% endunless %}
                     }
                     .header-tags{
                         text-align: right;
@@ -180,7 +178,8 @@
                         text-transform: uppercase;
                         font-variant: small-caps;
                         padding-top: .5em;
-                        padding-bottom: .5em; 
+                        padding-bottom: 2.5em; 
+                        margin-top: -50px;
                     }
                     .header-tags a {
                         font-size: 1.2em;
@@ -225,11 +224,10 @@
 
             <!-- Main content -->
             <div class="centered">
-                {% unless page.url == '/posts-by-tag' or page.url == '/posts-by-tag/' %}
                     <div class="header-tags">
+                        <a href="{{ site.baseurl }}">posts</a>
                         <a href="{{ site.baseurl }}/posts-by-tag">tags</a>
                     </div>
-                {% endunless %}
 
                 <main>
                     {{ content }}
