@@ -13,11 +13,19 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Build the site in the jekyll/builder container
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.0' # Specify your Ruby version here
+        bundler-cache: true
+
+    - name: Install dependencies
       run: |
-        docker run \
-        -v ${{ github.workspace }}:/srv/jekyll \
-        jekyll/builder:latest /bin/bash -c "jekyll build --future"
+        gem install bundler
+        bundle install
+
+    - name: Build the site
+      run: bundle exec jekyll build --future
 
     - name: Deploy to GitHub Pages
       uses: jamesives/github-pages-deploy-action@v4
