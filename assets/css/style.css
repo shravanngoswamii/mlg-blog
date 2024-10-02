@@ -117,7 +117,7 @@ footer {
     background-position: 0 .1em;
     background-repeat: no-repeat; }
   footer #feed-button {
-    background-image: url(../images/icons8-rss-white.png); }
+    background-image: url(../images/icons8-rss-dark.png); }
     footer #feed-button:hover {
       background-image: url(../images/icons8-rss-blue.png); }
   footer #twitter-button {
