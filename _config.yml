@@ -17,4 +17,4 @@ exclude:
     - LICENSE.txt
     - README.md
     - todo.tasks
-
+    - vendor
