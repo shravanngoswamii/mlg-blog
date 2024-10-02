@@ -48,7 +48,7 @@ jobs:
         with:
           message: |
             <!-- preview-url-comment -->
-            Preview the changes: https://mlg.eng.cam.ac.uk/preview/pr-previews/${{ github.event.pull_request.number }}
+            Preview the changes: https://mlg.eng.cam.ac.uk/blog/pr-previews/${{ github.event.pull_request.number }}
           comment_tag: preview-url-comment
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
