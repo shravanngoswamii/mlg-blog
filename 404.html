@@ -209,18 +209,29 @@
                             margin-top: 0 !important;
                         }
                     }
-                    .header-tags {
-                        text-align: right;
-                        padding-right: 10px !important;
-                        padding-top: 70px;
-                    }
                     header {
                         height: 100px;
+                        margin-bottom: 0px;
+                    }
+                    .header-tags{
+                        text-align: right;
+                        font-family: 'Roboto Condensed', sans-serif;
+                        text-transform: uppercase;
+                        font-variant: small-caps;
+                        padding-top: .5em;
+                        padding-bottom: .5em; 
                     }
                     .header-tags a {
+                        font-size: 1.2em;
+                        color: white;
+                        text-decoration: none;
+                        font-weight: bold; 
                         border-radius: 5px;
                         padding: 5px;
                         background: rgba(0, 0, 0, 0.5);
+                    }
+                    .header-tags a:hover {
+                        border-bottom: 5px solid #3a88c4; 
                     }
                 </style>
                 <div class="mlg-navbar-container">
@@ -247,15 +258,15 @@
                 </script>
             </nav>
 
-            <!-- Header and menu -->
+            <!-- Header Image -->
             <header>
-                <div class="header-tags">
-                            <a href="/blog/posts-by-tag">tags</a>
-                </div>
             </header>
 
             <!-- Main content -->
             <div class="centered">
+                <div class="header-tags">
+                    <a href="/blog/posts-by-tag">tags</a>
+                </div>
                 <main>
                     <article>
     <h1 id="page-not-found">Page Not Found</h1>
